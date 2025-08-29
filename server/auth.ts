@@ -51,18 +51,26 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        console.log(`[AUTH DEBUG] Attempting login for username: "${username}"`);
         const user = await storage.getUserByUsername(username);
+        console.log(`[AUTH DEBUG] User found:`, user ? { id: user.id, username: user.username, role: user.role, isActive: user.isActive } : null);
+        
         if (!user || !user.isActive) {
+          console.log(`[AUTH DEBUG] Login failed: user not found or inactive`);
           return done(null, false);
         }
         
+        console.log(`[AUTH DEBUG] Comparing passwords - provided: "${password}", stored: "${user.password}"`);
         // Check password (plain text for demo purposes)
         if (password === user.password) {
+          console.log(`[AUTH DEBUG] Password match successful`);
           return done(null, user);
         }
         
+        console.log(`[AUTH DEBUG] Password mismatch`);
         return done(null, false);
       } catch (error) {
+        console.log(`[AUTH DEBUG] Error during authentication:`, error);
         return done(error);
       }
     }),
@@ -100,14 +108,37 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), async (req, res) => {
-    try {
-      // Update last login time
-      await storage.updateUser(req.user!.id, { lastLoginAt: new Date() as any }, req.user!.id);
-      res.status(200).json(req.user);
-    } catch (error) {
-      res.status(200).json(req.user);
-    }
+  app.post("/api/login", (req, res, next) => {
+    console.log(`[LOGIN DEBUG] Login attempt with body:`, req.body);
+    passport.authenticate("local", (err, user, info) => {
+      console.log(`[LOGIN DEBUG] Authentication result - err:`, err, `user:`, user ? { id: user.id, username: user.username, role: user.role } : null, `info:`, info);
+      
+      if (err) {
+        console.log(`[LOGIN DEBUG] Authentication error:`, err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      
+      if (!user) {
+        console.log(`[LOGIN DEBUG] Authentication failed - no user returned`);
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      req.login(user, async (loginErr) => {
+        if (loginErr) {
+          console.log(`[LOGIN DEBUG] Session login error:`, loginErr);
+          return res.status(500).json({ message: "Session error" });
+        }
+        
+        try {
+          console.log(`[LOGIN DEBUG] Login successful, updating last login time`);
+          await storage.updateUser(user.id, { lastLoginAt: new Date() as any }, user.id);
+          res.status(200).json(user);
+        } catch (error) {
+          console.log(`[LOGIN DEBUG] Error updating last login time:`, error);
+          res.status(200).json(user);
+        }
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
