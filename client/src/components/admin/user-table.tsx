@@ -228,7 +228,6 @@ export default function UserTable({ user }: UserTableProps) {
                   <td className="py-4 px-6">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={userData.profileImageUrl || undefined} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
                           {(userData.firstName?.[0] || '') + (userData.lastName?.[0] || '')}
                         </AvatarFallback>
