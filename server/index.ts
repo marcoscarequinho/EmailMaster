@@ -8,20 +8,17 @@ app.use(express.urlencoded({ extended: false }));
 
 // Root health check for deployment compatibility
 app.get('/', (req, res, next) => {
-  // Only respond with health check if this is not a browser request
   const acceptHeader = req.get('Accept') || '';
-  const userAgent = req.get('User-Agent') || '';
   
-  // Check for non-browser requests (health checks, curl, etc.)
-  if (!acceptHeader.includes('text/html') || 
-      userAgent.includes('curl') || 
-      userAgent.includes('wget') ||
-      userAgent.toLowerCase().includes('health') ||
-      userAgent.toLowerCase().includes('check')) {
+  // If this is clearly a browser request for HTML, let it pass through to frontend
+  // Otherwise, respond with health check (for deployment health checks, curl, etc.)
+  if (acceptHeader.includes('text/html') && acceptHeader.includes('text/css')) {
+    // This looks like a browser requesting the frontend app
+    next();
+  } else {
+    // Respond with health check for all other requests (deployment checks, API calls, etc.)
     return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   }
-  
-  next();
 });
 
 app.use((req, res, next) => {
