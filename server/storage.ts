@@ -13,7 +13,7 @@ import {
   type AuditLog,
   type UserRole,
 } from "@shared/schema";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { eq, desc, and, or, like, count } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
@@ -58,8 +58,13 @@ export class DatabaseStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       console.log(`[STORAGE DEBUG] Looking for user with username: "${username}"`);
+      
+      // Test raw SQL query to see if there's a schema mismatch
+      const rawResult = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      console.log(`[STORAGE DEBUG] Raw SQL result:`, rawResult.rows);
+      
       const result = await db.select().from(users).where(eq(users.username, username));
-      console.log(`[STORAGE DEBUG] Query result:`, result);
+      console.log(`[STORAGE DEBUG] Drizzle query result:`, result);
       const [user] = result;
       console.log(`[STORAGE DEBUG] Found user:`, user ? { id: user.id, username: user.username, role: user.role } : null);
       return user;
