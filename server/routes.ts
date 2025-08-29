@@ -1,19 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-import { createUserSchema, updateUserSchema, createEmailSchema } from "@shared/schema";
+import { setupAuth, requireAuth, requireAdmin, requireSuperAdmin } from "./auth";
+import { createUserSchema, updateUserSchema, createEmailSchema, createDomainSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/user', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -22,15 +21,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User management routes (Admin/Super Admin only)
-  app.get('/api/users', isAuthenticated, async (req: any, res) => {
+  app.get('/api/users', requireAdmin, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const currentUser = await storage.getUser(userId);
-      
-      if (!currentUser || !['admin', 'super_admin'].includes(currentUser.role)) {
-        return res.status(403).json({ message: "Insufficient permissions" });
-      }
-
       const { role, search } = req.query;
       let users;
 
@@ -47,15 +39,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/users/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/users/stats', requireAdmin, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const currentUser = await storage.getUser(userId);
-      
-      if (!currentUser || !['admin', 'super_admin'].includes(currentUser.role)) {
-        return res.status(403).json({ message: "Insufficient permissions" });
-      }
-
       const stats = await storage.getUserStats();
       res.json(stats);
     } catch (error) {
@@ -64,22 +49,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/users', isAuthenticated, async (req: any, res) => {
+  app.post('/api/users', requireAdmin, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const currentUser = await storage.getUser(userId);
+      const currentUser = req.user;
       
-      if (!currentUser || !['admin', 'super_admin'].includes(currentUser.role)) {
-        return res.status(403).json({ message: "Insufficient permissions" });
-      }
-
       // Admins can't create other admins, only super_admins can
       if (currentUser.role === 'admin' && req.body.role === 'admin') {
         return res.status(403).json({ message: "Admins cannot create other administrators" });
       }
 
       const userData = createUserSchema.parse(req.body);
-      const newUser = await storage.createUser(userData, userId);
+      const newUser = await storage.createUser(userData, currentUser.id);
       res.status(201).json(newUser);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -90,17 +70,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/users/:id', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/users/:id', requireAdmin, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const currentUser = await storage.getUser(userId);
+      const currentUser = req.user;
       
-      if (!currentUser || !['admin', 'super_admin'].includes(currentUser.role)) {
-        return res.status(403).json({ message: "Insufficient permissions" });
-      }
-
       const userData = updateUserSchema.parse(req.body);
-      const updatedUser = await storage.updateUser(req.params.id, userData, userId);
+      const updatedUser = await storage.updateUser(req.params.id, userData, currentUser.id);
       
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -117,9 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Email routes
-  app.get('/api/emails', isAuthenticated, async (req: any, res) => {
+  app.get('/api/emails', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { folder = 'inbox' } = req.query;
       
       const emails = await storage.getEmailsForUser(userId, folder as string);
@@ -130,9 +105,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/emails', isAuthenticated, async (req: any, res) => {
+  app.post('/api/emails', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const emailData = createEmailSchema.parse(req.body);
       
       const email = await storage.createEmail(userId, emailData);
@@ -146,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/emails/:id/status', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/emails/:id/status', requireAuth, async (req: any, res) => {
     try {
       const { isRead, isStarred } = req.body;
       await storage.updateEmailStatus(req.params.id, isRead, isStarred);
@@ -157,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/emails/:id/folder', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/emails/:id/folder', requireAuth, async (req: any, res) => {
     try {
       const { folder } = req.body;
       await storage.moveEmailToFolder(req.params.id, folder);
@@ -168,16 +143,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Audit logs route (Admin/Super Admin only)
-  app.get('/api/audit-logs', isAuthenticated, async (req: any, res) => {
+  // Domain management routes (Super Admin only)
+  app.get('/api/domains', requireSuperAdmin, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const currentUser = await storage.getUser(userId);
-      
-      if (!currentUser || !['admin', 'super_admin'].includes(currentUser.role)) {
-        return res.status(403).json({ message: "Insufficient permissions" });
-      }
+      const domains = await storage.getDomains();
+      res.json(domains);
+    } catch (error) {
+      console.error("Error fetching domains:", error);
+      res.status(500).json({ message: "Failed to fetch domains" });
+    }
+  });
 
+  app.post('/api/domains', requireSuperAdmin, async (req: any, res) => {
+    try {
+      const currentUser = req.user;
+      const domainData = createDomainSchema.parse(req.body);
+      const newDomain = await storage.createDomain(domainData, currentUser.id);
+      res.status(201).json(newDomain);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      console.error("Error creating domain:", error);
+      res.status(500).json({ message: "Failed to create domain" });
+    }
+  });
+
+  app.patch('/api/domains/:id/status', requireSuperAdmin, async (req: any, res) => {
+    try {
+      const { isActive } = req.body;
+      await storage.updateDomainStatus(req.params.id, isActive);
+      res.json({ message: "Domain status updated" });
+    } catch (error) {
+      console.error("Error updating domain status:", error);
+      res.status(500).json({ message: "Failed to update domain status" });
+    }
+  });
+
+  // Audit logs route (Admin/Super Admin only)
+  app.get('/api/audit-logs', requireAdmin, async (req: any, res) => {
+    try {
       const logs = await storage.getAuditLogs();
       res.json(logs);
     } catch (error) {

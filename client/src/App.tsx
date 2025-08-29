@@ -5,9 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
+import AuthPage from "@/pages/auth-page";
 import Home from "@/pages/home";
 import UsersPage from "@/pages/admin/users";
+import DomainsPage from "@/pages/admin/domains";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -15,11 +16,15 @@ function Router() {
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={AuthPage} />
+          <Route path="/auth" component={AuthPage} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
           <Route path="/admin/users" component={UsersPage} />
+          <Route path="/admin/domains" component={DomainsPage} />
         </>
       )}
       <Route component={NotFound} />

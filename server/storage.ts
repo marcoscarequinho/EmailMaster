@@ -1,13 +1,15 @@
 import {
   users,
+  domains,
   emails,
   auditLogs,
   type User,
-  type UpsertUser,
   type CreateUser,
   type UpdateUser,
   type Email,
   type CreateEmail,
+  type CreateDomain,
+  type Domain,
   type AuditLog,
   type UserRole,
 } from "@shared/schema";
@@ -16,11 +18,9 @@ import { eq, desc, and, or, like, count } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
+  // User operations (traditional auth)
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  
-  // Extended user operations
+  getUserByUsername(username: string): Promise<User | undefined>;
   createUser(userData: CreateUser, createdBy: string): Promise<User>;
   updateUser(id: string, userData: UpdateUser, updatedBy: string): Promise<User | undefined>;
   getUsersByRole(role?: UserRole): Promise<User[]>;
@@ -31,6 +31,11 @@ export interface IStorage {
     clients: number;
     activeToday: number;
   }>;
+  
+  // Domain operations
+  getDomains(): Promise<Domain[]>;
+  createDomain(domainData: CreateDomain, createdBy: string): Promise<Domain>;
+  updateDomainStatus(id: string, isActive: boolean): Promise<void>;
   
   // Email operations
   getEmailsForUser(userId: string, folder?: string): Promise<Email[]>;
@@ -44,38 +49,27 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations (mandatory for Replit Auth)
+  // User operations (traditional auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-          lastLoginAt: new Date(),
-        },
-      })
-      .returning();
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
     return user;
   }
 
   // Extended user operations
   async createUser(userData: CreateUser, createdBy: string): Promise<User> {
     const id = randomUUID();
+    const { tempPassword, ...userDataWithoutPassword } = userData;
     const [user] = await db
       .insert(users)
       .values({
         id,
-        ...userData,
-        // In a real app, you'd hash the temporary password
-        // For now, we'll just store it as-is for demo purposes
+        ...userDataWithoutPassword,
+        password: tempPassword, // In real app, hash this password
       })
       .returning();
 
@@ -149,6 +143,32 @@ export class DatabaseStorage implements IStorage {
       clients: clientResult.count,
       activeToday: activeTodayResult.count,
     };
+  }
+
+  // Domain operations
+  async getDomains(): Promise<Domain[]> {
+    return await db.select().from(domains).orderBy(desc(domains.createdAt));
+  }
+
+  async createDomain(domainData: CreateDomain, createdBy: string): Promise<Domain> {
+    const [domain] = await db
+      .insert(domains)
+      .values({
+        ...domainData,
+        createdBy,
+      })
+      .returning();
+
+    // Log the action
+    await this.logAction(createdBy, 'CREATE_DOMAIN', undefined, {
+      domain: domainData.domain,
+    });
+
+    return domain;
+  }
+
+  async updateDomainStatus(id: string, isActive: boolean): Promise<void> {
+    await db.update(domains).set({ isActive }).where(eq(domains.id, id));
   }
 
   // Email operations
