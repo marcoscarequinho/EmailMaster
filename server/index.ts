@@ -12,7 +12,7 @@ app.get('/', (req, res, next) => {
   
   // If this is clearly a browser request for HTML, let it pass through to frontend
   // Otherwise, respond with health check (for deployment health checks, curl, etc.)
-  if (acceptHeader.includes('text/html') && acceptHeader.includes('text/css')) {
+  if (acceptHeader.includes('text/html')) {
     // This looks like a browser requesting the frontend app
     next();
   } else {

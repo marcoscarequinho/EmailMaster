@@ -122,6 +122,7 @@ export const updateUserSchema = createInsertSchema(users).pick({
   lastName: true,
   role: true,
   isActive: true,
+  lastLoginAt: true,
 }).partial();
 
 // Schema for email creation
