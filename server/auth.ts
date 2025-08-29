@@ -56,8 +56,7 @@ export function setupAuth(app: Express) {
           return done(null, false);
         }
         
-        // For demo purposes, check password as plain text
-        // In production, use comparePasswords with hashed passwords
+        // Check password (plain text for demo purposes)
         if (password === user.password) {
           return done(null, user);
         }
