@@ -36,10 +36,19 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: typeof loginData) => {
-      const response = await apiRequest('POST', '/api/login', credentials);
-      return await response.json();
+      console.log('[FRONTEND DEBUG] Attempting login with credentials:', credentials);
+      try {
+        const response = await apiRequest('POST', '/api/login', credentials);
+        const data = await response.json();
+        console.log('[FRONTEND DEBUG] Login response:', data);
+        return data;
+      } catch (error) {
+        console.log('[FRONTEND DEBUG] Login error:', error);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('[FRONTEND DEBUG] Login successful:', data);
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao EmailServer Pro!",
@@ -50,6 +59,7 @@ export default function AuthPage() {
       }, 500);
     },
     onError: (error) => {
+      console.log('[FRONTEND DEBUG] Login mutation error:', error);
       toast({
         title: "Erro no login",
         description: "Usuário ou senha incorretos.",
@@ -81,7 +91,10 @@ export default function AuthPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[FRONTEND DEBUG] Form submitted with data:', loginData);
+    
     if (!loginData.username || !loginData.password) {
+      console.log('[FRONTEND DEBUG] Validation failed - missing fields');
       toast({
         title: "Campos obrigatórios",
         description: "Preencha usuário e senha.",
@@ -89,6 +102,8 @@ export default function AuthPage() {
       });
       return;
     }
+    
+    console.log('[FRONTEND DEBUG] Starting login mutation');
     loginMutation.mutate(loginData);
   };
 
