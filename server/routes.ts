@@ -9,6 +9,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
 
+  // Health check endpoint for deployment health checks
+  app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
   // Auth routes
   app.get('/api/user', requireAuth, async (req: any, res) => {
     try {

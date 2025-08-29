@@ -6,9 +6,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Health check endpoint for deployment health checks
-app.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+// Root health check for deployment compatibility
+app.get('/', (req, res, next) => {
+  // Only respond with health check if this is not a browser request
+  const acceptHeader = req.get('Accept') || '';
+  const userAgent = req.get('User-Agent') || '';
+  
+  // Check for non-browser requests (health checks, curl, etc.)
+  if (!acceptHeader.includes('text/html') || 
+      userAgent.includes('curl') || 
+      userAgent.includes('wget') ||
+      userAgent.toLowerCase().includes('health') ||
+      userAgent.toLowerCase().includes('check')) {
+    return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  }
+  
+  next();
 });
 
 app.use((req, res, next) => {
