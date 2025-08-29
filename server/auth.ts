@@ -51,18 +51,32 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        console.log(`[PASSPORT DEBUG] Authenticating username: "${username}"`);
         const user = await storage.getUserByUsername(username);
+        console.log(`[PASSPORT DEBUG] User lookup result:`, user ? { 
+          id: user.id, 
+          username: user.username, 
+          role: user.role, 
+          isActive: user.isActive,
+          passwordLength: user.password ? user.password.length : 0
+        } : null);
+        
         if (!user || !user.isActive) {
+          console.log(`[PASSPORT DEBUG] User not found or inactive`);
           return done(null, false);
         }
         
+        console.log(`[PASSPORT DEBUG] Comparing passwords - provided: "${password}" vs stored: "${user.password}"`);
         // Check password (plain text for demo purposes)
         if (password === user.password) {
+          console.log(`[PASSPORT DEBUG] Password match - authentication successful`);
           return done(null, user);
         }
+        
+        console.log(`[PASSPORT DEBUG] Password mismatch - authentication failed`);
         return done(null, false);
       } catch (error) {
-        console.log(`[AUTH DEBUG] Error during authentication:`, error);
+        console.log(`[PASSPORT DEBUG] Error during authentication:`, error);
         return done(error);
       }
     }),
