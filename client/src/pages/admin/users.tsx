@@ -21,7 +21,7 @@ export default function UsersPage() {
       });
       setTimeout(() => {
         window.location.href = "/api/login";
-      }, 500);
+      }, 100);
       return;
     }
 
@@ -49,7 +49,14 @@ export default function UsersPage() {
   }
 
   if (!user || !['admin', 'super_admin'].includes(user.role)) {
-    return null; // Will redirect via useEffect
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Redirecionando para login...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
