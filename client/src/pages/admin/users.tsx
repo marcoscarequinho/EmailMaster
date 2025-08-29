@@ -59,26 +59,12 @@ export default function UsersPage() {
     );
   }
 
+  // Versão de teste simples primeiro
   return (
-    <div className="min-h-screen bg-background">
-      <Header 
-        user={user}
-        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-      
-      <div className="flex">
-        <Sidebar 
-          user={user}
-          currentSection="users"
-          onSectionChange={() => {}}
-          collapsed={sidebarCollapsed}
-          onCompose={() => {}}
-        />
-        
-        <main className="flex-1 p-6">
-          <UserTable user={user} />
-        </main>
-      </div>
+    <div className="min-h-screen bg-background p-8">
+      <h1 className="text-2xl font-bold mb-4">Página de Usuários - TESTE</h1>
+      <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
+      <p className="mb-4">Esta é uma versão de teste para verificar se a página carrega.</p>
     </div>
   );
 }
