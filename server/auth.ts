@@ -100,14 +100,38 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), async (req, res) => {
-    try {
-      // Update last login time
-      await storage.updateUser(req.user!.id, { lastLoginAt: new Date() as any }, req.user!.id);
-      res.status(200).json(req.user);
-    } catch (error) {
-      res.status(200).json(req.user);
-    }
+  app.post("/api/login", (req, res, next) => {
+    console.log(`[LOGIN DEBUG] Login request received:`, { body: req.body, isAuthenticated: req.isAuthenticated() });
+    
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      console.log(`[LOGIN DEBUG] Passport result:`, { err, user: user ? { id: user.id, username: user.username } : null, info });
+      
+      if (err) {
+        console.log(`[LOGIN DEBUG] Authentication error:`, err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      
+      if (!user) {
+        console.log(`[LOGIN DEBUG] No user - sending 401`);
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      req.login(user, async (loginErr) => {
+        if (loginErr) {
+          console.log(`[LOGIN DEBUG] Login error:`, loginErr);
+          return res.status(500).json({ message: "Session error" });
+        }
+        
+        try {
+          console.log(`[LOGIN DEBUG] Login successful, updating timestamp`);
+          await storage.updateUser(user.id, { lastLoginAt: new Date() as any }, user.id);
+          res.status(200).json(user);
+        } catch (error) {
+          console.log(`[LOGIN DEBUG] Error updating timestamp:`, error);
+          res.status(200).json(user);
+        }
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
