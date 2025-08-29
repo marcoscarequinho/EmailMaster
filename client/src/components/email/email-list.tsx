@@ -9,7 +9,8 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
-  Star
+  Star,
+  Inbox
 } from "lucide-react";
 import type { User, Email } from "@shared/schema";
 
@@ -21,13 +22,14 @@ interface EmailListProps {
 export default function EmailList({ currentSection, user }: EmailListProps) {
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
 
-  const { data: emails = [], isLoading } = useQuery({
+  const { data: emails = [], isLoading } = useQuery<Email[]>({
     queryKey: ['/api/emails', { folder: currentSection }],
     retry: false,
   });
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatTime = (dateString: string | Date | null) => {
+    if (!dateString) return '';
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     const now = new Date();
     const diffInHours = Math.abs(now.getTime() - date.getTime()) / 36e5;
     

@@ -156,7 +156,7 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(emails)
-      .where(and(eq(emails.userId, userId), eq(emails.folder, folder)))
+      .where(and(eq(emails.userId, userId), eq(emails.folder, folder as any)))
       .orderBy(desc(emails.createdAt));
   }
 
@@ -185,7 +185,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async moveEmailToFolder(emailId: string, folder: string): Promise<void> {
-    await db.update(emails).set({ folder }).where(eq(emails.id, emailId));
+    await db.update(emails).set({ folder: folder as any }).where(eq(emails.id, emailId));
   }
 
   // Audit log operations

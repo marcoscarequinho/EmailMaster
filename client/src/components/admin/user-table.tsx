@@ -23,12 +23,12 @@ export default function UserTable({ user }: UserTableProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading } = useQuery<User[]>({
     queryKey: ['/api/users', { role: roleFilter, search }],
     retry: false,
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<{total: number; admins: number; clients: number; activeToday: number}>({
     queryKey: ['/api/users/stats'],
     retry: false,
   });
@@ -95,10 +95,10 @@ export default function UserTable({ user }: UserTableProps) {
     );
   };
 
-  const formatLastLogin = (lastLoginAt: string | null) => {
+  const formatLastLogin = (lastLoginAt: string | Date | null) => {
     if (!lastLoginAt) return 'Nunca';
     
-    const date = new Date(lastLoginAt);
+    const date = typeof lastLoginAt === 'string' ? new Date(lastLoginAt) : lastLoginAt;
     const now = new Date();
     const diffInHours = Math.abs(now.getTime() - date.getTime()) / 36e5;
     
