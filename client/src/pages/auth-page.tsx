@@ -44,7 +44,10 @@ export default function AuthPage() {
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao EmailServer Pro!",
       });
-      window.location.href = "/";
+      // Use setTimeout to ensure the session is established before redirect
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
     },
     onError: (error) => {
       toast({
