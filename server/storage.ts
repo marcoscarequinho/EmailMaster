@@ -58,6 +58,11 @@ export class DatabaseStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       console.log(`[STORAGE DEBUG] Looking for user with username: "${username}"`);
+      console.log(`[STORAGE DEBUG] DATABASE_URL:`, process.env.DATABASE_URL);
+      
+      // First, let's see all users to understand what's in the database
+      const allUsersResult = await pool.query('SELECT username, role FROM users LIMIT 10');
+      console.log(`[STORAGE DEBUG] All users in database:`, allUsersResult.rows);
       
       // Test raw SQL query to see if there's a schema mismatch
       const rawResult = await pool.query('SELECT * FROM users WHERE username = $1', [username]);

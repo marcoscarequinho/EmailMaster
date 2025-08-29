@@ -1,0 +1,116 @@
+2025-08-29 13:15:45.15
+851d92cd
+User
+headers: {
+2025-08-29 13:15:45.15
+851d92cd
+User
+'content-type': undefined,
+2025-08-29 13:15:45.15
+851d92cd
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 13:15:45.15
+851d92cd
+User
+accept: '*/*'
+2025-08-29 13:15:45.15
+851d92cd
+User
+}
+2025-08-29 13:15:45.15
+851d92cd
+User
+}
+2025-08-29 13:15:45.19
+851d92cd
+User
+4:15:45 PM [express] GET /api/user 401 in 49ms
+2025-08-29 13:16:04.24
+851d92cd
+User
+[SERVER DEBUG] POST /api/login {
+2025-08-29 13:16:04.24
+851d92cd
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:16:04.24
+851d92cd
+User
+headers: {
+2025-08-29 13:16:04.24
+851d92cd
+User
+'content-type': 'application/json',
+2025-08-29 13:16:04.24
+851d92cd
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 13:16:04.24
+851d92cd
+User
+accept: '*/*'
+2025-08-29 13:16:04.24
+851d92cd
+User
+}
+2025-08-29 13:16:04.24
+851d92cd
+User
+}
+2025-08-29 13:16:04.56
+851d92cd
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 13:16:04.56
+851d92cd
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:16:04.56
+851d92cd
+User
+isAuthenticated: false
+2025-08-29 13:16:04.56
+851d92cd
+User
+}
+2025-08-29 13:16:04.56
+851d92cd
+User
+[PASSPORT DEBUG] Authenticating username: "0admin"
+2025-08-29 13:16:04.56
+851d92cd
+User
+[STORAGE DEBUG] Looking for user with username: "0admin"
+2025-08-29 13:16:04.82
+851d92cd
+User
+[STORAGE DEBUG] Raw SQL result: []
+2025-08-29 13:16:04.87
+851d92cd
+User
+[STORAGE DEBUG] Drizzle query result: []
+2025-08-29 13:16:04.87
+851d92cd
+User
+[STORAGE DEBUG] Found user: null
+2025-08-29 13:16:04.87
+851d92cd
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 13:16:04.87
+851d92cd
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 13:16:04.87
+851d92cd
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 13:16:04.87
+851d92cd
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 13:16:04.87
+851d92cd
+User
+4:16:04 PM [express] POST /api/login 401 in 630ms :: {"message":"Invalid credentials"}
