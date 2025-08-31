@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { User } from "@shared/schema";
 
 interface CreateUserModalProps {
@@ -104,6 +105,15 @@ export default function CreateUserModal({ isOpen, onClose, currentUser }: Create
           </DialogTitle>
         </DialogHeader>
 
+        <div className="mb-4 p-3 bg-muted/30 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <HelpCircle className="h-4 w-4 text-primary" />
+            <p className="text-sm text-muted-foreground">
+              <strong>Dica:</strong> Após criar o usuário, ele poderá fazer login com email e senha temporária
+            </p>
+          </div>
+        </div>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="firstName" className="text-sm font-medium text-foreground">
@@ -132,9 +142,19 @@ export default function CreateUserModal({ isOpen, onClose, currentUser }: Create
           </div>
           
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-foreground">
-              E-mail
-            </Label>
+            <div className="flex items-center space-x-2 mb-2">
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                E-mail
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Endereço de email que será usado para login e comunicação</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Input
               id="email"
               type="email"
@@ -145,9 +165,23 @@ export default function CreateUserModal({ isOpen, onClose, currentUser }: Create
           </div>
           
           <div>
-            <Label htmlFor="role" className="text-sm font-medium text-foreground">
-              Tipo de Usuário
-            </Label>
+            <div className="flex items-center space-x-2 mb-2">
+              <Label htmlFor="role" className="text-sm font-medium text-foreground">
+                Tipo de Usuário
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="max-w-xs">
+                    <p><strong>Cliente:</strong> Pode usar sistema de email</p>
+                    <p><strong>Admin:</strong> Pode gerenciar usuários</p>
+                    <p><strong>Super Admin:</strong> Controle total do sistema</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
               <SelectTrigger data-testid="select-user-role">
                 <SelectValue />
@@ -160,9 +194,19 @@ export default function CreateUserModal({ isOpen, onClose, currentUser }: Create
           </div>
           
           <div>
-            <Label htmlFor="tempPassword" className="text-sm font-medium text-foreground">
-              Senha Temporária
-            </Label>
+            <div className="flex items-center space-x-2 mb-2">
+              <Label htmlFor="tempPassword" className="text-sm font-medium text-foreground">
+                Senha Temporária
+              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Senha inicial que o usuário deverá alterar no primeiro login</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Input
               id="tempPassword"
               type="password"

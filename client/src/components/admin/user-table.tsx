@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Edit, UserMinus, Trash2, UserCheck, Plus } from "lucide-react";
+import { Edit, UserMinus, Trash2, UserCheck, Plus, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import CreateUserModal from "./create-user-modal";
 import type { User } from "@shared/schema";
 
@@ -131,55 +132,90 @@ export default function UserTable({ user }: UserTableProps) {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Gerenciamento de Usuários</h1>
         {user.role === 'super_admin' && (
-          <Button 
-            onClick={() => setCreateUserOpen(true)}
-            data-testid="button-create-user"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Usuário
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={() => setCreateUserOpen(true)}
+                data-testid="button-create-user"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Usuário
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Criar novo usuário ou administrador no sistema</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 
       {/* User Stats */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total de Usuários</p>
-                <p className="text-2xl font-bold text-foreground" data-testid="stat-total-users">{stats.total}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="bg-card border border-border rounded-lg p-6 cursor-help">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Total de Usuários</p>
+                    <p className="text-2xl font-bold text-foreground" data-testid="stat-total-users">{stats.total}</p>
+                  </div>
+                  <div className="text-2xl text-primary">👥</div>
+                </div>
               </div>
-              <div className="text-2xl text-primary">👥</div>
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Administradores</p>
-                <p className="text-2xl font-bold text-foreground" data-testid="stat-admins">{stats.admins}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Número total de usuários registrados no sistema</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="bg-card border border-border rounded-lg p-6 cursor-help">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Administradores</p>
+                    <p className="text-2xl font-bold text-foreground" data-testid="stat-admins">{stats.admins}</p>
+                  </div>
+                  <div className="text-2xl text-yellow-500">🛡️</div>
+                </div>
               </div>
-              <div className="text-2xl text-yellow-500">🛡️</div>
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Clientes</p>
-                <p className="text-2xl font-bold text-foreground" data-testid="stat-clients">{stats.clients}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Usuários com permissões administrativas (Admin + Super Admin)</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="bg-card border border-border rounded-lg p-6 cursor-help">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Clientes</p>
+                    <p className="text-2xl font-bold text-foreground" data-testid="stat-clients">{stats.clients}</p>
+                  </div>
+                  <div className="text-2xl text-green-500">👤</div>
+                </div>
               </div>
-              <div className="text-2xl text-green-500">👤</div>
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Ativos Hoje</p>
-                <p className="text-2xl font-bold text-foreground" data-testid="stat-active-today">{stats.activeToday}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Usuários finais que podem usar o sistema de email</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="bg-card border border-border rounded-lg p-6 cursor-help">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Ativos Hoje</p>
+                    <p className="text-2xl font-bold text-foreground" data-testid="stat-active-today">{stats.activeToday}</p>
+                  </div>
+                  <div className="text-2xl text-green-500">📈</div>
+                </div>
               </div>
-              <div className="text-2xl text-green-500">📈</div>
-            </div>
-          </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Usuários que fizeram login nas últimas 24 horas</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       )}
 
@@ -189,25 +225,41 @@ export default function UserTable({ user }: UserTableProps) {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Lista de Usuários</h2>
             <div className="flex items-center space-x-4">
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="w-48" data-testid="select-role-filter">
-                  <SelectValue placeholder="Todos os tipos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Todos os tipos</SelectItem>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="client">Cliente</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="text"
-                placeholder="Buscar usuário..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-64"
-                data-testid="input-search-users"
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                      <SelectTrigger className="w-48" data-testid="select-role-filter">
+                        <SelectValue placeholder="Todos os tipos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todos os tipos</SelectItem>
+                        <SelectItem value="super_admin">Super Admin</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="client">Cliente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Filtrar usuários por tipo de permissão</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Input
+                    type="text"
+                    placeholder="Buscar usuário..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-64"
+                    data-testid="input-search-users"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Buscar por nome, sobrenome ou email</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -218,8 +270,32 @@ export default function UserTable({ user }: UserTableProps) {
               <tr>
                 <th className="text-left py-3 px-6 font-medium text-muted-foreground">Usuário</th>
                 <th className="text-left py-3 px-6 font-medium text-muted-foreground">E-mail</th>
-                <th className="text-left py-3 px-6 font-medium text-muted-foreground">Tipo</th>
-                <th className="text-left py-3 px-6 font-medium text-muted-foreground">Status</th>
+                <th className="text-left py-3 px-6 font-medium text-muted-foreground">
+                  <div className="flex items-center space-x-2">
+                    <span>Tipo</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Hierarquia: Super Admin → Admin → Cliente</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </th>
+                <th className="text-left py-3 px-6 font-medium text-muted-foreground">
+                  <div className="flex items-center space-x-2">
+                    <span>Status</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Ativo: pode fazer login • Inativo: bloqueado</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </th>
                 <th className="text-left py-3 px-6 font-medium text-muted-foreground">Último Acesso</th>
                 <th className="text-left py-3 px-6 font-medium text-muted-foreground">Ações</th>
               </tr>
@@ -255,36 +331,62 @@ export default function UserTable({ user }: UserTableProps) {
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm" title="Editar" data-testid={`button-edit-${userData.id}`}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="sm" data-testid={`button-edit-${userData.id}`}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar informações do usuário</p>
+                        </TooltipContent>
+                      </Tooltip>
                       {userData.isActive ? (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          title="Desativar"
-                          onClick={() => handleToggleActive(userData.id, userData.isActive)}
-                          disabled={updateUserMutation.isPending}
-                          data-testid={`button-deactivate-${userData.id}`}
-                        >
-                          <UserMinus className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleToggleActive(userData.id, userData.isActive)}
+                              disabled={updateUserMutation.isPending}
+                              data-testid={`button-deactivate-${userData.id}`}
+                            >
+                              <UserMinus className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Desativar usuário - bloqueia acesso ao sistema</p>
+                          </TooltipContent>
+                        </Tooltip>
                       ) : (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          title="Ativar"
-                          onClick={() => handleToggleActive(userData.id, userData.isActive)}
-                          disabled={updateUserMutation.isPending}
-                          data-testid={`button-activate-${userData.id}`}
-                        >
-                          <UserCheck className="h-4 w-4 text-green-600" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleToggleActive(userData.id, userData.isActive)}
+                              disabled={updateUserMutation.isPending}
+                              data-testid={`button-activate-${userData.id}`}
+                            >
+                              <UserCheck className="h-4 w-4 text-green-600" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Reativar usuário - permite acesso ao sistema</p>
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                       {userData.role !== 'super_admin' && (
-                        <Button variant="ghost" size="sm" title="Excluir" data-testid={`button-delete-${userData.id}`}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" data-testid={`button-delete-${userData.id}`}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Excluir usuário permanentemente</p>
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </td>

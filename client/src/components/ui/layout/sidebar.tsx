@@ -12,6 +12,7 @@ import {
   LogOut,
   Plus
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { User } from "@shared/schema";
 
 interface SidebarProps {
@@ -46,9 +47,9 @@ export default function Sidebar({
   ];
 
   const adminItems = [
-    { id: 'users', label: 'Usuários', icon: Users, path: '/admin/users' },
-    { id: 'settings', label: 'Configurações', icon: Settings, path: '/admin/settings' },
-    { id: 'logs', label: 'Logs de Auditoria', icon: FileCode, path: '/admin/logs' },
+    { id: 'users', label: 'Usuários', icon: Users, path: '/admin/users', tooltip: 'Gerenciar usuários, roles e permissões' },
+    { id: 'settings', label: 'Configurações', icon: Settings, path: '/admin/settings', tooltip: 'Configurações do sistema e segurança' },
+    { id: 'logs', label: 'Logs de Auditoria', icon: FileCode, path: '/admin/logs', tooltip: 'Histórico de ações administrativas' },
   ];
 
   return (
@@ -98,17 +99,24 @@ export default function Sidebar({
             <ul className="space-y-1">
               {adminItems.map((item) => (
                 <li key={item.id}>
-                  <Link href={item.path}>
-                    <a 
-                      className={`nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors ${
-                        location === item.path ? 'active' : 'text-muted-foreground'
-                      }`}
-                      data-testid={`link-${item.id}`}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span className="sidebar-text">{item.label}</span>
-                    </a>
-                  </Link>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href={item.path}>
+                        <a 
+                          className={`nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors ${
+                            location === item.path ? 'active' : 'text-muted-foreground'
+                          }`}
+                          data-testid={`link-${item.id}`}
+                        >
+                          <item.icon className="h-5 w-5" />
+                          <span className="sidebar-text">{item.label}</span>
+                        </a>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{item.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </li>
               ))}
             </ul>
