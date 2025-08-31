@@ -27,17 +27,15 @@ export default function AuthPage() {
   const loginMutation = useMutation({
     mutationFn: async (credentials: typeof loginData) => {
       const response = await apiRequest('POST', '/api/login', credentials);
-      return await response.json();
+      return response;
     },
     onSuccess: () => {
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao EmailServer Pro!",
       });
-      // Use setTimeout to ensure the session is established before redirect
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500);
+      // Force page reload to refresh authentication state
+      window.location.reload();
     },
     onError: (error) => {
       toast({

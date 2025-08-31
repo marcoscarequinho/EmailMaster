@@ -15,24 +15,26 @@ export default function UsersPage() {
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !user)) {
       toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
+        title: "Acesso Negado",
+        description: "Você não está logado. Redirecionando para login...",
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 100);
+        window.location.href = "/auth";
+      }, 1000);
       return;
     }
 
     if (user && !['admin', 'super_admin'].includes(user.role)) {
       toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
+        title: "Acesso Negado",
+        description: "Apenas administradores podem acessar esta página.",
         variant: "destructive",
       });
       // Redirect to home page
-      window.location.href = "/";
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
       return;
     }
   }, [isAuthenticated, isLoading, user, toast]);
