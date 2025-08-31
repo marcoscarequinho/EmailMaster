@@ -77,9 +77,7 @@ export default function UsersPage() {
         />
         
         <main className="flex-1 p-8">
-          <h1 className="text-2xl font-bold mb-4">TESTE: Header + Sidebar adicionados</h1>
-          <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
-          <p className="mb-4">Se você vê esta mensagem, Header E Sidebar funcionam.</p>
+          <UserTable user={user} />
         </main>
       </div>
     </div>
