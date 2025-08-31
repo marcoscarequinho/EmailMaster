@@ -36,15 +36,18 @@ export function setupAuth(app: Express) {
     createTableIfMissing: true,
   });
 
+  const isProduction = process.env.NODE_ENV === "production" || process.env.REPLIT_DEPLOYMENT === "1";
+  
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || 'default-secret-key',
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-      secure: false, // Set to false for development
+      secure: isProduction, // Enable secure cookies for production (HTTPS)
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 // 24 hours
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      sameSite: isProduction ? 'strict' : 'lax' // Stricter in production
     }
   };
 
