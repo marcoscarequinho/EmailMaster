@@ -59,17 +59,28 @@ export default function UsersPage() {
     );
   }
 
-  // Teste 1: Adicionar apenas Header
+  // Teste 2: Adicionar Header + Sidebar
   return (
     <div className="min-h-screen bg-background">
       <Header 
         user={user}
         onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">TESTE: Header adicionado</h1>
-        <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
-        <p className="mb-4">Se você vê esta mensagem, o Header funciona.</p>
+      
+      <div className="flex">
+        <Sidebar 
+          user={user}
+          currentSection="users"
+          onSectionChange={() => {}}
+          collapsed={sidebarCollapsed}
+          onCompose={() => {}}
+        />
+        
+        <main className="flex-1 p-8">
+          <h1 className="text-2xl font-bold mb-4">TESTE: Header + Sidebar adicionados</h1>
+          <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
+          <p className="mb-4">Se você vê esta mensagem, Header E Sidebar funcionam.</p>
+        </main>
       </div>
     </div>
   );
