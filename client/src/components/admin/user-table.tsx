@@ -130,13 +130,15 @@ export default function UserTable({ user }: UserTableProps) {
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Gerenciamento de Usuários</h1>
-        <Button 
-          onClick={() => setCreateUserOpen(true)}
-          data-testid="button-create-user"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Usuário
-        </Button>
+        {user.role === 'super_admin' && (
+          <Button 
+            onClick={() => setCreateUserOpen(true)}
+            data-testid="button-create-user"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Usuário
+          </Button>
+        )}
       </div>
 
       {/* User Stats */}

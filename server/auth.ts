@@ -83,27 +83,6 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/register", async (req, res, next) => {
-    try {
-      const existingUser = await storage.getUserByUsername(req.body.username);
-      if (existingUser) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
-
-      const { tempPassword, ...userData } = req.body;
-      const user = await storage.createUser({
-        ...userData,
-        tempPassword: await hashPassword(tempPassword),
-      }, 'system');
-
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.status(201).json(user);
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Registration failed" });
-    }
-  });
 
   app.post("/api/login", passport.authenticate("local"), async (req, res) => {
     try {

@@ -54,14 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/users', requireAdmin, async (req: any, res) => {
+  app.post('/api/users', requireSuperAdmin, async (req: any, res) => {
     try {
       const currentUser = req.user;
-      
-      // Admins can't create other admins, only super_admins can
-      if (currentUser.role === 'admin' && req.body.role === 'admin') {
-        return res.status(403).json({ message: "Admins cannot create other administrators" });
-      }
 
       const userData = createUserSchema.parse(req.body);
       const newUser = await storage.createUser(userData, currentUser.id);

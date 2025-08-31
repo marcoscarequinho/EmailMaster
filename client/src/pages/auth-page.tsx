@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Server, Shield, Users } from "lucide-react";
 
 export default function AuthPage() {
@@ -17,15 +16,6 @@ export default function AuthPage() {
   const [loginData, setLoginData] = useState({
     username: '',
     password: '',
-  });
-
-  const [registerData, setRegisterData] = useState({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
-    email: '',
   });
 
   // Redirect to home if already logged in
@@ -58,27 +48,6 @@ export default function AuthPage() {
     },
   });
 
-  const registerMutation = useMutation({
-    mutationFn: async (credentials: typeof registerData) => {
-      const response = await apiRequest('POST', '/api/register', credentials);
-      return await response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Conta criada com sucesso",
-        description: "Bem-vindo ao EmailServer Pro!",
-      });
-      window.location.href = "/";
-    },
-    onError: (error) => {
-      toast({
-        title: "Erro no cadastro",
-        description: "Não foi possível criar a conta. Verifique os dados.",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginData.username || !loginData.password) {
@@ -90,27 +59,6 @@ export default function AuthPage() {
       return;
     }
     loginMutation.mutate(loginData);
-  };
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!registerData.username || !registerData.password || !registerData.firstName || !registerData.email) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Preencha todos os campos obrigatórios.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (registerData.password !== registerData.confirmPassword) {
-      toast({
-        title: "Senhas não coincidem",
-        description: "A confirmação de senha deve ser igual à senha.",
-        variant: "destructive",
-      });
-      return;
-    }
-    registerMutation.mutate(registerData);
   };
 
   if (isLoading) {
@@ -126,7 +74,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Login/Register Form */}
+      {/* Left side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -135,157 +83,52 @@ export default function AuthPage() {
             <p className="text-muted-foreground">Sistema Profissional de E-mail</p>
           </div>
 
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login" data-testid="tab-login">Login</TabsTrigger>
-              <TabsTrigger value="register" data-testid="tab-register">Cadastro</TabsTrigger>
-            </TabsList>
+          <Card className="p-6">
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="username" className="text-sm font-medium">
+                  Usuário
+                </Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={loginData.username}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
+                  placeholder="Digite seu usuário"
+                  data-testid="input-login-username"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Senha
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={loginData.password}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Digite sua senha"
+                  data-testid="input-login-password"
+                />
+              </div>
 
-            {/* Login Form */}
-            <TabsContent value="login">
-              <Card className="p-6">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div>
-                    <Label htmlFor="username" className="text-sm font-medium">
-                      Usuário
-                    </Label>
-                    <Input
-                      id="username"
-                      type="text"
-                      value={loginData.username}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
-                      placeholder="Digite seu usuário"
-                      data-testid="input-login-username"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="password" className="text-sm font-medium">
-                      Senha
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Digite sua senha"
-                      data-testid="input-login-password"
-                    />
-                  </div>
+              <Button 
+                type="submit" 
+                className="w-full py-6 text-lg"
+                disabled={loginMutation.isPending}
+                data-testid="button-submit-login"
+              >
+                {loginMutation.isPending ? 'Entrando...' : 'Entrar'}
+              </Button>
+            </form>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full py-6 text-lg"
-                    disabled={loginMutation.isPending}
-                    data-testid="button-submit-login"
-                  >
-                    {loginMutation.isPending ? 'Entrando...' : 'Entrar'}
-                  </Button>
-                </form>
-
-                {/* Demo credentials */}
-                <div className="mt-6 p-4 bg-muted rounded-lg">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">Credenciais de Demonstração:</p>
-                  <p className="text-xs text-muted-foreground">Super Admin: <strong>0admin</strong> / <strong>BB03@5bb03#5</strong></p>
-                </div>
-              </Card>
-            </TabsContent>
-
-            {/* Register Form */}
-            <TabsContent value="register">
-              <Card className="p-6">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName" className="text-sm font-medium">
-                        Nome
-                      </Label>
-                      <Input
-                        id="firstName"
-                        type="text"
-                        value={registerData.firstName}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, firstName: e.target.value }))}
-                        data-testid="input-register-first-name"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName" className="text-sm font-medium">
-                        Sobrenome
-                      </Label>
-                      <Input
-                        id="lastName"
-                        type="text"
-                        value={registerData.lastName}
-                        onChange={(e) => setRegisterData(prev => ({ ...prev, lastName: e.target.value }))}
-                        data-testid="input-register-last-name"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="email" className="text-sm font-medium">
-                      E-mail
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
-                      data-testid="input-register-email"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="regUsername" className="text-sm font-medium">
-                      Usuário
-                    </Label>
-                    <Input
-                      id="regUsername"
-                      type="text"
-                      value={registerData.username}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, username: e.target.value }))}
-                      data-testid="input-register-username"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="regPassword" className="text-sm font-medium">
-                      Senha
-                    </Label>
-                    <Input
-                      id="regPassword"
-                      type="password"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
-                      data-testid="input-register-password"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                      Confirmar Senha
-                    </Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={registerData.confirmPassword}
-                      onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      data-testid="input-register-confirm-password"
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full py-6 text-lg"
-                    disabled={registerMutation.isPending}
-                    data-testid="button-submit-register"
-                  >
-                    {registerMutation.isPending ? 'Criando conta...' : 'Criar Conta'}
-                  </Button>
-                </form>
-              </Card>
-            </TabsContent>
-          </Tabs>
+            {/* Demo credentials */}
+            <div className="mt-6 p-4 bg-muted rounded-lg">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Credenciais de Demonstração:</p>
+              <p className="text-xs text-muted-foreground">Super Admin: <strong>0admin</strong> / <strong>BB03@5bb03#5</strong></p>
+            </div>
+          </Card>
         </div>
       </div>
 
@@ -319,6 +162,12 @@ export default function AuthPage() {
                 <h3 className="font-semibold text-foreground">Hierarquia de Usuários</h3>
                 <p className="text-sm text-muted-foreground">Super Admin → Admin → Cliente</p>
               </div>
+            </div>
+
+            <div className="mt-8 p-4 bg-background/50 border border-border rounded-lg">
+              <p className="text-sm text-muted-foreground text-center">
+                Novos usuários são criados apenas pelo <strong>Super Admin</strong> através do painel administrativo.
+              </p>
             </div>
           </div>
         </div>
