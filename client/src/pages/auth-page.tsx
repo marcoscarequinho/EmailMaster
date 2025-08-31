@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -12,6 +12,7 @@ import { Mail, Server, Shield, Users } from "lucide-react";
 export default function AuthPage() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const [loginData, setLoginData] = useState({
     username: '',
@@ -30,12 +31,18 @@ export default function AuthPage() {
       return response;
     },
     onSuccess: () => {
+      // Invalidate auth query to refresh user data
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
       toast({
         title: "Login realizado com sucesso",
-        description: "Bem-vindo ao EmailServer Pro!",
+        description: "Bem-vindo ao GERENCIADOR DE E-MAIL DA MC DESPACHAD!",
       });
-      // Force page reload to refresh authentication state
-      window.location.reload();
+      
+      // Small delay to allow query invalidation, then redirect
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     },
     onError: (error) => {
       toast({

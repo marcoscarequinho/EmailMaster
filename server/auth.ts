@@ -42,10 +42,11 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-      secure: false, // Keep false for now to work with both dev and prod
+      secure: false, // Keep false for Replit dev environment
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      sameSite: 'lax' // Allow cross-site requests for Replit URLs
+      sameSite: 'lax', // Allow cross-site requests for Replit URLs
+      domain: undefined // Let the browser handle domain automatically
     }
   };
 

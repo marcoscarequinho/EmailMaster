@@ -8,6 +8,8 @@ export function useAuth() {
     retry: false,
     staleTime: 0, // Always fetch fresh auth state
     refetchOnWindowFocus: true, // Refetch when window gets focus
+    refetchOnMount: true, // Always refetch on component mount
+    gcTime: 0, // Don't cache auth state
   });
 
   return {
