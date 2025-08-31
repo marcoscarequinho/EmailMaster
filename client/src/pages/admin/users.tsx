@@ -59,12 +59,18 @@ export default function UsersPage() {
     );
   }
 
-  // Versão de teste simples primeiro
+  // Teste 1: Adicionar apenas Header
   return (
-    <div className="min-h-screen bg-background p-8">
-      <h1 className="text-2xl font-bold mb-4">Página de Usuários - TESTE</h1>
-      <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
-      <p className="mb-4">Esta é uma versão de teste para verificar se a página carrega.</p>
+    <div className="min-h-screen bg-background">
+      <Header 
+        user={user}
+        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-4">TESTE: Header adicionado</h1>
+        <p className="mb-4">Usuário logado: {user?.firstName} {user?.lastName} ({user?.role})</p>
+        <p className="mb-4">Se você vê esta mensagem, o Header funciona.</p>
+      </div>
     </div>
   );
 }
