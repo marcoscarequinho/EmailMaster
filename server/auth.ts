@@ -36,18 +36,16 @@ export function setupAuth(app: Express) {
     createTableIfMissing: true,
   });
 
-  const isProduction = process.env.NODE_ENV === "production" || process.env.REPLIT_DEPLOYMENT === "1";
-  
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || 'default-secret-key',
+    secret: process.env.SESSION_SECRET || 'default-secret-key-for-dev',
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
-      secure: isProduction, // Enable secure cookies for production (HTTPS)
+      secure: false, // Keep false for now to work with both dev and prod
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      sameSite: isProduction ? 'strict' : 'lax' // Stricter in production
+      sameSite: 'lax' // Allow cross-site requests for Replit URLs
     }
   };
 
@@ -87,14 +85,29 @@ export function setupAuth(app: Express) {
   });
 
 
-  app.post("/api/login", passport.authenticate("local"), async (req, res) => {
-    try {
-      // Update last login time
-      await storage.updateUser(req.user!.id, { lastLoginAt: new Date() as any }, req.user!.id);
-      res.status(200).json(req.user);
-    } catch (error) {
-      res.status(200).json(req.user);
-    }
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      if (!user) {
+        return res.status(401).json({ message: "Usuário ou senha incorretos" });
+      }
+      
+      req.logIn(user, async (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Login failed" });
+        }
+        
+        try {
+          // Update last login time
+          await storage.updateUser(user.id, { lastLoginAt: new Date() as any }, user.id);
+          res.status(200).json(user);
+        } catch (error) {
+          res.status(200).json(user);
+        }
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
