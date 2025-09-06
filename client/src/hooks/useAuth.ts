@@ -12,6 +12,7 @@ export function useAuth() {
     gcTime: 0, // Don't cache auth state
   });
 
+
   return {
     user,
     isLoading,

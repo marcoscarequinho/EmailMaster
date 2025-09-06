@@ -34,7 +34,8 @@ export function setupAuth(app: Express) {
   const PostgresSessionStore = connectPg(session);
   const sessionStore = new PostgresSessionStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: true, // Re-enabled but table already exists
+    createTableIfMissing: false, // Disable to avoid index conflicts
+    tableName: 'sessions', // Use the table name from our schema
   });
 
   const sessionSettings: session.SessionOptions = {
@@ -114,25 +115,35 @@ export function setupAuth(app: Express) {
 
 
   app.post("/api/login", (req, res, next) => {
+    console.log("🔐 Login attempt:", req.body);
+    
     passport.authenticate("local", (err: any, user: any, info: any) => {
+      console.log("🔍 Auth result:", { err: !!err, user: !!user, info });
+      
       if (err) {
+        console.error("❌ Login error:", err);
         return res.status(500).json({ message: "Internal server error" });
       }
       if (!user) {
         const message = info?.message || "Usuário ou senha incorretos";
+        console.log("❌ Login failed:", message);
         return res.status(401).json({ message });
       }
       
+      console.log("✅ User authenticated, logging in...");
       req.logIn(user, async (err) => {
         if (err) {
+          console.error("❌ req.logIn error:", err);
           return res.status(500).json({ message: "Login failed" });
         }
         
         try {
           // Update last login time
           await storage.updateUser(user.id, { lastLoginAt: new Date() as any }, user.id);
+          console.log("✅ Login successful for:", user.username);
           res.status(200).json(user);
         } catch (error) {
+          console.log("⚠️ Failed to update last login, but user logged in");
           res.status(200).json(user);
         }
       });

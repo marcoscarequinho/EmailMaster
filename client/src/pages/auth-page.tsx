@@ -140,7 +140,7 @@ export default function AuthPage() {
             {/* Demo credentials */}
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <p className="text-xs font-medium text-muted-foreground mb-2">Credenciais de Demonstração:</p>
-              <p className="text-xs text-muted-foreground">Super Admin: <strong>0admin</strong> / <strong>BB03@5bb03#5</strong></p>
+              <p className="text-xs text-muted-foreground">Super Admin: <strong>1admin</strong> / <strong>BB03@5bb03#5</strong></p>
             </div>
           </Card>
         </div>
