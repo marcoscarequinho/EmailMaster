@@ -62,24 +62,14 @@ class EmailService {
     this.initializeTransporter();
   }
 
-  private async initializeTransporter() {
+  private initializeTransporter() {
     try {
       // Only initialize if SMTP credentials are provided
       if (defaultEmailConfig.auth.user && defaultEmailConfig.auth.pass) {
         this.transporter = nodemailer.createTransport(defaultEmailConfig);
-        
-        // Test the connection
-        try {
-          await this.transporter.verify();
-          this.isConfigured = true;
-          console.log('📧 Email service initialized and verified with SMTP configuration');
-          console.log(`   Host: ${defaultEmailConfig.host}:${defaultEmailConfig.port}`);
-        } catch (verifyError) {
-          console.error('❌ SMTP verification failed:', verifyError.message);
-          console.log('⚠️  Email service running in mock mode due to SMTP connection failure');
-          this.isConfigured = false;
-          this.transporter = null;
-        }
+        this.isConfigured = true;
+        console.log('📧 Email service initialized with SMTP configuration');
+        console.log(`   Host: ${defaultEmailConfig.host}:${defaultEmailConfig.port}`);
       } else {
         console.log('⚠️  Email service running in mock mode - no SMTP credentials provided');
         console.log('   Set SMTP_HOST, SMTP_USER, SMTP_PASS environment variables for real email sending');
