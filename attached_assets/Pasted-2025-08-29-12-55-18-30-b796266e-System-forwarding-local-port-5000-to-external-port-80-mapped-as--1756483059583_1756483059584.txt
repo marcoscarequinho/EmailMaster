@@ -1,0 +1,116 @@
+2025-08-29 12:55:18.30
+b796266e
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2025-08-29 12:55:19.73
+b796266e
+User
+> rest-express@1.0.0 start
+2025-08-29 12:55:19.73
+b796266e
+User
+> NODE_ENV=production node dist/index.js
+2025-08-29 12:55:20.71
+b796266e
+User
+3:55:20 PM [express] serving on port 5000
+2025-08-29 12:56:16.79
+b796266e
+User
+[SERVER DEBUG] GET /api/user {
+2025-08-29 12:56:16.79
+b796266e
+User
+body: {},
+2025-08-29 12:56:16.79
+b796266e
+User
+headers: {
+2025-08-29 12:56:16.79
+b796266e
+User
+'content-type': undefined,
+2025-08-29 12:56:16.79
+b796266e
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 12:56:16.79
+b796266e
+User
+accept: '*/*'
+2025-08-29 12:56:16.79
+b796266e
+User
+}
+2025-08-29 12:56:16.79
+b796266e
+User
+}
+2025-08-29 12:56:16.83
+b796266e
+User
+3:56:16 PM [express] GET /api/user 401 in 46ms
+2025-08-29 12:56:32.59
+b796266e
+User
+[SERVER DEBUG] POST /api/login {
+2025-08-29 12:56:32.59
+b796266e
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 12:56:32.59
+b796266e
+User
+headers: {
+2025-08-29 12:56:32.59
+b796266e
+User
+'content-type': 'application/json',
+2025-08-29 12:56:32.59
+b796266e
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 12:56:32.59
+b796266e
+User
+accept: '*/*'
+2025-08-29 12:56:32.59
+b796266e
+User
+}
+2025-08-29 12:56:32.59
+b796266e
+User
+}
+2025-08-29 12:56:32.91
+b796266e
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 12:56:32.91
+b796266e
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 12:56:32.91
+b796266e
+User
+isAuthenticated: false
+2025-08-29 12:56:32.91
+b796266e
+User
+}
+2025-08-29 12:56:35.14
+b796266e
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 12:56:35.14
+b796266e
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 12:56:35.14
+b796266e
+User
+3:56:35 PM [express] POST /api/login 401 in 2542ms :: {"message":"Invalid credentials"}
+2025-08-29 12:56:55.07
+2dda9546
+System
+system: received signal terminated
