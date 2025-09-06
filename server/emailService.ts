@@ -12,16 +12,47 @@ interface EmailConfig {
   };
 }
 
-// Default configuration for development (you can use Gmail SMTP for testing)
-const defaultEmailConfig: EmailConfig = {
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER || '', // Your email
-    pass: process.env.SMTP_PASS || '', // Your email password or app password
-  },
+// SMTP Configuration with fallback options
+const createEmailConfig = (): EmailConfig & any => {
+  const baseConfig = {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER || '',
+      pass: process.env.SMTP_PASS || '',
+    },
+  };
+
+  // Add additional options for better compatibility
+  const additionalOptions: any = {
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+  };
+
+  // Special configurations for common providers
+  if (baseConfig.host.includes('gmail')) {
+    additionalOptions.service = 'gmail';
+  }
+  
+  // For custom domains, add TLS options
+  if (!baseConfig.host.includes('gmail') && !baseConfig.host.includes('outlook')) {
+    additionalOptions.tls = {
+      rejectUnauthorized: false,
+      ciphers: 'SSLv3'
+    };
+    
+    // Try requireTLS for port 587
+    if (baseConfig.port === 587 && !baseConfig.secure) {
+      additionalOptions.requireTLS = true;
+    }
+  }
+
+  return { ...baseConfig, ...additionalOptions };
 };
+
+const defaultEmailConfig = createEmailConfig();
 
 class EmailService {
   private transporter: nodemailer.Transporter | null = null;
@@ -31,16 +62,28 @@ class EmailService {
     this.initializeTransporter();
   }
 
-  private initializeTransporter() {
+  private async initializeTransporter() {
     try {
       // Only initialize if SMTP credentials are provided
       if (defaultEmailConfig.auth.user && defaultEmailConfig.auth.pass) {
         this.transporter = nodemailer.createTransport(defaultEmailConfig);
-        this.isConfigured = true;
-        console.log('📧 Email service initialized with SMTP configuration');
+        
+        // Test the connection
+        try {
+          await this.transporter.verify();
+          this.isConfigured = true;
+          console.log('📧 Email service initialized and verified with SMTP configuration');
+          console.log(`   Host: ${defaultEmailConfig.host}:${defaultEmailConfig.port}`);
+        } catch (verifyError) {
+          console.error('❌ SMTP verification failed:', verifyError.message);
+          console.log('⚠️  Email service running in mock mode due to SMTP connection failure');
+          this.isConfigured = false;
+          this.transporter = null;
+        }
       } else {
         console.log('⚠️  Email service running in mock mode - no SMTP credentials provided');
         console.log('   Set SMTP_HOST, SMTP_USER, SMTP_PASS environment variables for real email sending');
+        console.log('   Run: npx tsx scripts/setup-gmail-smtp.ts for Gmail setup instructions');
       }
     } catch (error) {
       console.error('❌ Failed to initialize email service:', error);
