@@ -1,20 +1,5 @@
 {
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/public",
-  "installCommand": "npm install",
-  "functions": {
-    "api/[...slug].ts": {
-      "runtime": "@vercel/node"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/[...slug]"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "installCommand": "npm install"
 }
