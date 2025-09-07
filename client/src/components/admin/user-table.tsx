@@ -39,7 +39,8 @@ export default function UserTable({ user }: UserTableProps) {
 
   const updateUserMutation = useMutation({
     mutationFn: async ({ userId, userData }: { userId: string; userData: any }) => {
-      await apiRequest('PATCH', `/api/users/${userId}`, userData);
+      const response = await apiRequest('PATCH', `/api/users/${userId}`, userData);
+      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -79,7 +80,8 @@ export default function UserTable({ user }: UserTableProps) {
     mutationFn: async (userId: string) => {
       console.log("🔥 FORCE DELETE: Attempting to delete user:", userId);
       // Use the new force-delete route
-      await apiRequest('POST', `/api/users/${userId}/force-delete`);
+      const response = await apiRequest('POST', `/api/users/${userId}/force-delete`);
+      return await response.json();
     },
     onSuccess: () => {
       console.log("🔥 FORCE DELETE: User deletion successful");

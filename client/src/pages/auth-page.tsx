@@ -28,7 +28,7 @@ export default function AuthPage() {
   const loginMutation = useMutation({
     mutationFn: async (credentials: typeof loginData) => {
       const response = await apiRequest('POST', '/api/login', credentials);
-      return response;
+      return await response.json();
     },
     onSuccess: () => {
       // Invalidate auth query to refresh user data

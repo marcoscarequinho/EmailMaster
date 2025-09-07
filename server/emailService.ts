@@ -119,7 +119,7 @@ class EmailService {
             success: true,
             email: savedEmail,
             sentViaSmtp: false,
-            smtpError: smtpError.message
+            smtpError: smtpError instanceof Error ? smtpError.message : String(smtpError)
           };
         }
       } else {
@@ -149,7 +149,7 @@ class EmailService {
     const sentEmail = await storage.createEmail(userId, emailData);
 
     // Check if recipient is internal user and deliver to their inbox
-    await this.deliverToInternalRecipient(emailData, sender.email);
+    await this.deliverToInternalRecipient(emailData, sender.email || sender.username);
 
     return sentEmail;
   }

@@ -44,7 +44,8 @@ export default function CreateUserModal({ isOpen, onClose, currentUser }: Create
 
   const createUserMutation = useMutation({
     mutationFn: async (userData: typeof formData) => {
-      await apiRequest('POST', '/api/users', userData);
+      const response = await apiRequest('POST', '/api/users', userData);
+      return await response.json();
     },
     onSuccess: () => {
       toast({

@@ -65,11 +65,11 @@ async function testLogin() {
     console.log("\n🔍 Testing different login formats:");
     
     // Test by email
-    const adminByEmail = await db.select().from(users).where(eq(users.email, "admin@marcoscarequinho.com.br")).limit(1);
-    console.log(`Email login (admin@marcoscarequinho.com.br): ${adminByEmail.length > 0 ? '✅ Found' : '❌ Not found'}`);
+    const adminByEmail = await db.select().from(users).where(eq(users.email, "admin@mail.marcoscarequinho.com.br")).limit(1);
+    console.log(`Email login (admin@mail.marcoscarequinho.com.br): ${adminByEmail.length > 0 ? '✅ Found' : '❌ Not found'}`);
     
-    const clientByEmail = await db.select().from(users).where(eq(users.email, "contato@marcoscarequinho.com.br")).limit(1);
-    console.log(`Email login (contato@marcoscarequinho.com.br): ${clientByEmail.length > 0 ? '✅ Found' : '❌ Not found'}`);
+    const clientByEmail = await db.select().from(users).where(eq(users.email, "contato@mail.marcoscarequinho.com.br")).limit(1);
+    console.log(`Email login (contato@mail.marcoscarequinho.com.br): ${clientByEmail.length > 0 ? '✅ Found' : '❌ Not found'}`);
 
     console.log("\n✅ Login test completed!");
     

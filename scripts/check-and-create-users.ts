@@ -16,16 +16,16 @@ async function checkAndCreateUsers() {
     });
 
     // Check if domain exists
-    let domain = await db.select().from(domains).where(eq(domains.domain, "marcoscarequinho.com.br")).limit(1);
+    let domain = await db.select().from(domains).where(eq(domains.domain, "mail.marcoscarequinho.com.br")).limit(1);
     
     if (domain.length === 0) {
-      console.log("📧 Creating domain marcoscarequinho.com.br...");
+      console.log("📧 Creating domain mail.marcoscarequinho.com.br...");
       const [newDomain] = await db
         .insert(domains)
         .values({
           id: randomUUID(),
-          domain: "marcoscarequinho.com.br",
-          description: "Main email domain",
+          domain: "mail.marcoscarequinho.com.br",
+          description: "Email server domain",
           isActive: true,
           createdBy: "system",
         })
@@ -49,7 +49,7 @@ async function checkAndCreateUsers() {
           id: randomUUID(),
           username: "1admin",
           password: hashedPassword,
-          email: "admin@marcoscarequinho.com.br",
+          email: "admin@mail.marcoscarequinho.com.br",
           firstName: "Super",
           lastName: "Admin",
           domainId: domain[0].id,
@@ -89,7 +89,7 @@ async function checkAndCreateUsers() {
           id: randomUUID(),
           username: "contato",
           password: hashedPassword,
-          email: "contato@marcoscarequinho.com.br",
+          email: "contato@mail.marcoscarequinho.com.br",
           firstName: "Contato",
           lastName: "Cliente",
           domainId: domain[0].id,

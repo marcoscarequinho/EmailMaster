@@ -293,7 +293,7 @@ export class DatabaseStorage implements IStorage {
       .values({
         ...emailData,
         userId,
-        sender: sender.email,
+        sender: sender.email || sender.username,
         folder: 'sent',
       })
       .returning();
@@ -312,7 +312,7 @@ export class DatabaseStorage implements IStorage {
         .values({
           ...emailData,
           userId: recipient[0].id,
-          sender: sender.email,
+          sender: sender.email || sender.username,
           folder: 'inbox',
           isRead: false,
         });

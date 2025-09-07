@@ -58,7 +58,8 @@ export default function ComposeModal({ isOpen, onClose, user }: ComposeModalProp
         body: editorMode === 'html' ? htmlContent : emailData.body,
         format: editorMode
       };
-      await apiRequest('POST', '/api/emails', dataToSend);
+      const response = await apiRequest('POST', '/api/emails', dataToSend);
+      return await response.json();
     },
     onSuccess: (data: any) => {
       let description = "Seu email foi processado com sucesso.";

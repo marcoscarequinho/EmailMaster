@@ -21,11 +21,17 @@ export default function EmailServerStatus() {
 
   const { data: status, isLoading } = useQuery({
     queryKey: ['/api/email-service/status'],
-    queryFn: () => apiRequest('GET', '/api/email-service/status'),
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/email-service/status');
+      return await response.json();
+    },
   });
 
   const testConnectionMutation = useMutation({
-    mutationFn: () => apiRequest('POST', '/api/email-service/test'),
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/email-service/test');
+      return await response.json();
+    },
     onSuccess: (data) => {
       toast({
         title: data.connected ? "Conexão OK" : "Falha na Conexão",
