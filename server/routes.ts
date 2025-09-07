@@ -19,8 +19,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Auth routes
-  app.get('/api/user', requireAuth, async (req: any, res) => {
+  app.get('/api/user', async (req: any, res) => {
     try {
+      if (!req.isAuthenticated()) {
+        return res.json(null);
+      }
       const user = req.user;
       res.json(user);
     } catch (error) {
