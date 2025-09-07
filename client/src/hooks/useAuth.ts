@@ -6,10 +6,10 @@ export function useAuth() {
   const { data: user, isLoading, error } = useQuery<User | null>({
     queryKey: ["/api/user"],
     retry: false,
-    staleTime: 0, // Always fetch fresh auth state
-    refetchOnWindowFocus: true, // Refetch when window gets focus
-    refetchOnMount: true, // Always refetch on component mount
-    gcTime: 0, // Don't cache auth state
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent excessive requests
+    refetchOnWindowFocus: false, // Disable refetch on focus to prevent loops
+    refetchOnMount: false, // Only fetch once per component lifecycle
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
 
