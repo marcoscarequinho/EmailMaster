@@ -444,6 +444,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Setup endpoint for production deployment
+  app.post('/api/setup-users', async (req: any, res) => {
+    try {
+      console.log("🔧 Setting up users for production...");
+      
+      const { domains } = require("@shared/schema");
+      const bcrypt = require("bcrypt");
+      const { randomUUID } = require("crypto");
+
+      // Check if domain exists
+      let domain = await db.select().from(domains).where(eq(domains.domain, "mail.marcoscarequinho.com.br")).limit(1);
+      
+      if (domain.length === 0) {
+        console.log("📧 Creating domain mail.marcoscarequinho.com.br...");
+        const [newDomain] = await db
+          .insert(domains)
+          .values({
+            id: randomUUID(),
+            domain: "mail.marcoscarequinho.com.br",
+            description: "Email server domain",
+            isActive: true,
+            createdBy: "system",
+          })
+          .returning();
+        domain = [newDomain];
+      }
+
+      // Check super admin
+      const superAdmin = await db.select().from(users).where(eq(users.username, "1admin")).limit(1);
+      
+      if (superAdmin.length === 0) {
+        console.log("👑 Creating super admin user...");
+        const hashedPassword = await bcrypt.hash("BB03@5bb03#5", 10);
+        
+        await db.insert(users).values({
+          id: randomUUID(),
+          username: "1admin",
+          password: hashedPassword,
+          email: "admin@mail.marcoscarequinho.com.br",
+          firstName: "Super",
+          lastName: "Admin",
+          domainId: domain[0].id,
+          role: "super_admin",
+          isActive: true,
+        });
+      } else {
+        // Update password
+        console.log("🔄 Updating super admin password...");
+        const hashedPassword = await bcrypt.hash("BB03@5bb03#5", 10);
+        await db.update(users).set({ password: hashedPassword }).where(eq(users.id, superAdmin[0].id));
+      }
+
+      // Check client user
+      const client = await db.select().from(users).where(eq(users.username, "contato")).limit(1);
+      
+      if (client.length === 0) {
+        console.log("👤 Creating client user...");
+        const hashedPassword = await bcrypt.hash("031205", 10);
+        
+        await db.insert(users).values({
+          id: randomUUID(),
+          username: "contato",
+          password: hashedPassword,
+          email: "contato@mail.marcoscarequinho.com.br",
+          firstName: "Contato",
+          lastName: "Cliente",
+          domainId: domain[0].id,
+          role: "client",
+          isActive: true,
+        });
+      } else {
+        // Update password
+        console.log("🔄 Updating client password...");
+        const hashedPassword = await bcrypt.hash("031205", 10);
+        await db.update(users).set({ password: hashedPassword }).where(eq(users.id, client[0].id));
+      }
+
+      console.log("✅ Setup completed successfully!");
+      res.json({ 
+        success: true, 
+        message: "Users setup completed",
+        credentials: {
+          superAdmin: { username: "1admin", password: "BB03@5bb03#5" },
+          client: { username: "contato", password: "031205" }
+        }
+      });
+      
+    } catch (error) {
+      console.error("❌ Error during setup:", error);
+      res.status(500).json({ message: "Setup failed", error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
