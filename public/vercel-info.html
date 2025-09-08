@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailMaster - Deploy Info</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeb3b;
+            color: #856404;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 EmailMaster</h1>
+        
+        <div class="warning status">
+            <strong>⚠️ Vercel - Frontend Apenas</strong><br>
+            Esta versão na Vercel contém apenas o frontend. As funcionalidades completas requerem o backend Node.js.
+        </div>
+
+        <div class="success status">
+            <strong>✅ Localhost Funcionando</strong><br>
+            Execute <code>npm run dev</code> localmente para acessar a versão completa em <code>http://localhost:5000</code>
+        </div>
+
+        <div class="info status">
+            <strong>🚀 Deploy Completo Recomendado</strong><br>
+            Para deploy completo com backend + banco de dados, use:
+            <ul>
+                <li><strong>Railway:</strong> <a href="https://railway.app">railway.app</a> (~$5/mês)</li>
+                <li><strong>Render:</strong> <a href="https://render.com">render.com</a> (gratuito)</li>
+                <li><strong>Heroku:</strong> <a href="https://heroku.com">heroku.com</a></li>
+            </ul>
+        </div>
+
+        <h2>🔧 Funcionalidades</h2>
+        <ul>
+            <li>✅ Interface React moderna</li>
+            <li>✅ Sistema de autenticação</li>
+            <li>✅ Gerenciamento de usuários</li>
+            <li>✅ Sistema de emails</li>
+            <li>⚠️ Backend APIs (apenas localhost/Railway/Render)</li>
+            <li>⚠️ Banco PostgreSQL (apenas localhost/Railway/Render)</li>
+            <li>⚠️ SMTP Email (apenas localhost/Railway/Render)</li>
+        </ul>
+
+        <h2>📋 Instruções de Deploy</h2>
+        <p>Consulte o arquivo <code>DEPLOYMENT.md</code> no repositório para instruções completas de deployment.</p>
+
+        <p>
+            <strong>Repositório:</strong> 
+            <a href="https://github.com/marcoscarequinho/EmailMaster">github.com/marcoscarequinho/EmailMaster</a>
+        </p>
+    </div>
+</body>
+</html>

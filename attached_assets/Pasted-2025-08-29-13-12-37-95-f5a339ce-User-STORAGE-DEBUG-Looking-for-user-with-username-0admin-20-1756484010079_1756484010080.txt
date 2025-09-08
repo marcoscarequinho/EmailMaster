@@ -1,0 +1,116 @@
+2025-08-29 13:12:37.95
+f5a339ce
+User
+[STORAGE DEBUG] Looking for user with username: "0admin"
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[STORAGE DEBUG] Query result: []
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[STORAGE DEBUG] Found user: null
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 13:12:38.00
+f5a339ce
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 13:12:38.00
+f5a339ce
+User
+4:12:38 PM [express] POST /api/login 401 in 96ms :: {"message":"Invalid credentials"}
+2025-08-29 13:12:56.03
+f5a339ce
+User
+[SERVER DEBUG] POST /api/login {
+2025-08-29 13:12:56.03
+f5a339ce
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:12:56.03
+f5a339ce
+User
+headers: {
+2025-08-29 13:12:56.03
+f5a339ce
+User
+'content-type': 'application/json',
+2025-08-29 13:12:56.03
+f5a339ce
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 13:12:56.03
+f5a339ce
+User
+accept: '*/*'
+2025-08-29 13:12:56.03
+f5a339ce
+User
+}
+2025-08-29 13:12:56.03
+f5a339ce
+User
+}
+2025-08-29 13:12:56.35
+f5a339ce
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 13:12:56.35
+f5a339ce
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:12:56.35
+f5a339ce
+User
+isAuthenticated: false
+2025-08-29 13:12:56.35
+f5a339ce
+User
+}
+2025-08-29 13:12:56.35
+f5a339ce
+User
+[PASSPORT DEBUG] Authenticating username: "0admin"
+2025-08-29 13:12:56.35
+f5a339ce
+User
+[STORAGE DEBUG] Looking for user with username: "0admin"
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[STORAGE DEBUG] Query result: []
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[STORAGE DEBUG] Found user: null
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 13:12:56.53
+f5a339ce
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 13:12:56.53
+f5a339ce
+User
+4:12:56 PM [express] POST /api/login 401 in 504ms :: {"message":"Invalid credentials"}
