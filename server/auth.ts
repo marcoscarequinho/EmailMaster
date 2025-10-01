@@ -2,8 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
+import bcrypt from "bcrypt";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
@@ -14,19 +13,13 @@ declare global {
   }
 }
 
-const scryptAsync = promisify(scrypt);
-
-async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${buf.toString("hex")}.${salt}`;
+export async function hashPassword(password: string) {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 }
 
-async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+export async function comparePasswords(supplied: string, stored: string) {
+  return await bcrypt.compare(supplied, stored);
 }
 
 export function setupAuth(app: Express) {
@@ -60,15 +53,16 @@ export function setupAuth(app: Express) {
       try {
         const user = await storage.getUserByUsername(username);
         if (!user || !user.isActive) {
-          return done(null, false);
+          return done(null, false, { message: "Invalid credentials" });
         }
-        
-        // Check password (plain text for demo purposes)
-        if (password === user.password) {
+
+        // Check password using bcrypt
+        const isValid = await comparePasswords(password, user.password);
+        if (isValid) {
           return done(null, user);
         }
-        
-        return done(null, false);
+
+        return done(null, false, { message: "Invalid credentials" });
       } catch (error) {
         return done(error);
       }

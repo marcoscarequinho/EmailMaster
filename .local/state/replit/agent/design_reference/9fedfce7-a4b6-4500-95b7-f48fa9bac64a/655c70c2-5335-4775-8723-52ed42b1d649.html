@@ -1,0 +1,830 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailServer Pro - Sistema de E-mail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            },
+            fontFamily: {
+                sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+            }
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(222 47% 11%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222 47% 11%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222 47% 11%);
+            --primary: hsl(217 91% 60%);
+            --primary-foreground: hsl(0 0% 98%);
+            --secondary: hsl(217 32% 17%);
+            --secondary-foreground: hsl(0 0% 98%);
+            --muted: hsl(220 13% 91%);
+            --muted-foreground: hsl(215 16% 47%);
+            --accent: hsl(217 91% 60%);
+            --accent-foreground: hsl(0 0% 98%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(220 13% 91%);
+            --input: hsl(220 13% 91%);
+            --ring: hsl(217 91% 60%);
+            --radius: 8px;
+        }
+
+        .dark {
+            --background: hsl(222 84% 5%);
+            --foreground: hsl(213 31% 91%);
+            --card: hsl(222 84% 5%);
+            --card-foreground: hsl(213 31% 91%);
+            --popover: hsl(222 84% 5%);
+            --popover-foreground: hsl(213 31% 91%);
+            --primary: hsl(217 91% 60%);
+            --primary-foreground: hsl(222 84% 5%);
+            --secondary: hsl(217 32% 17%);
+            --secondary-foreground: hsl(213 31% 91%);
+            --muted: hsl(217 32% 17%);
+            --muted-foreground: hsl(215 20% 65%);
+            --accent: hsl(217 32% 17%);
+            --accent-foreground: hsl(213 31% 91%);
+            --destructive: hsl(0 62% 30%);
+            --destructive-foreground: hsl(213 31% 91%);
+            --border: hsl(217 32% 17%);
+            --input: hsl(217 32% 17%);
+            --ring: hsl(217 91% 60%);
+        }
+
+        .gmail-sidebar {
+            width: 256px;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .gmail-sidebar.collapsed {
+            width: 68px;
+        }
+
+        .email-item:hover {
+            background-color: hsl(217 91% 60% / 0.05);
+        }
+
+        .role-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        .role-super-admin {
+            background-color: hsl(0 84% 60% / 0.1);
+            color: hsl(0 84% 60%);
+        }
+
+        .role-admin {
+            background-color: hsl(43 96% 56% / 0.1);
+            color: hsl(43 96% 40%);
+        }
+
+        .role-client {
+            background-color: hsl(142 71% 45% / 0.1);
+            color: hsl(142 71% 45%);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background text-foreground font-sans">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5">
+        <div class="max-w-md w-full mx-4">
+            <div class="bg-card shadow-2xl rounded-2xl p-8 border border-border">
+                <div class="text-center mb-8">
+                    <i class="fas fa-envelope-open-text text-4xl text-primary mb-4"></i>
+                    <h1 class="text-3xl font-bold text-foreground mb-2">EmailServer Pro</h1>
+                    <p class="text-muted-foreground">Sistema Profissional de E-mail</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">E-mail</label>
+                        <input type="email" class="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" placeholder="seu@email.com" data-mock="true">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-2">Senha</label>
+                        <input type="password" class="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-colors" placeholder="••••••••" data-mock="true">
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                            <span class="ml-2 text-sm text-muted-foreground">Lembrar de mim</span>
+                        </label>
+                        <a href="#" class="text-sm text-primary hover:underline">Esqueceu a senha?</a>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button type="button" onclick="login('super_admin')" class="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                            Login como Super Admin
+                        </button>
+                        <button type="button" onclick="login('admin')" class="w-full bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors">
+                            Login como Admin
+                        </button>
+                        <button type="button" onclick="login('client')" class="w-full bg-muted text-muted-foreground py-3 rounded-lg font-medium hover:bg-muted/80 transition-colors">
+                            Login como Cliente
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8 pt-6 border-t border-border text-center">
+                    <p class="text-sm text-muted-foreground">
+                        Sistema seguro com autenticação em camadas
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Interface -->
+    <div id="mainApp" class="hidden min-h-screen bg-background">
+        <!-- Top Header -->
+        <header class="bg-card border-b border-border px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleSidebar()" class="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <i class="fas fa-bars text-muted-foreground"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-envelope-open-text text-primary text-xl"></i>
+                        <span class="text-xl font-semibold text-foreground">EmailServer Pro</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative hidden md:block">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                        <input type="text" placeholder="Pesquisar emails..." class="pl-10 pr-4 py-2 bg-muted border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent w-80">
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="flex items-center space-x-3">
+                        <span id="userRole" class="role-badge role-super-admin">Super Admin</span>
+                        <div class="relative">
+                            <button class="flex items-center space-x-2 p-2 hover:bg-muted rounded-lg transition-colors">
+                                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-primary-foreground text-sm"></i>
+                                </div>
+                                <span class="hidden md:block text-sm font-medium text-foreground" data-bind="user.name">João Admin</span>
+                                <i class="fas fa-chevron-down text-muted-foreground text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebar" class="gmail-sidebar bg-card border-r border-border flex flex-col">
+                <div class="p-4">
+                    <button onclick="showCompose()" class="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center space-x-2">
+                        <i class="fas fa-plus"></i>
+                        <span class="sidebar-text">Escrever</span>
+                    </button>
+                </div>
+
+                <div class="flex-1 px-4 pb-4">
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="#" onclick="showSection('inbox')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-foreground">
+                                <i class="fas fa-inbox w-5"></i>
+                                <span class="sidebar-text">Caixa de Entrada</span>
+                                <span class="sidebar-text ml-auto bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">12</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('sent')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                <i class="fas fa-paper-plane w-5"></i>
+                                <span class="sidebar-text">Enviados</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('drafts')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                <i class="fas fa-file-alt w-5"></i>
+                                <span class="sidebar-text">Rascunhos</span>
+                                <span class="sidebar-text ml-auto text-xs text-muted-foreground">3</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('spam')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                <i class="fas fa-shield-alt w-5"></i>
+                                <span class="sidebar-text">Spam</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="showSection('trash')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                <i class="fas fa-trash w-5"></i>
+                                <span class="sidebar-text">Lixeira</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Admin-only sections -->
+                    <div id="adminSections" class="mt-6 pt-4 border-t border-border">
+                        <h3 class="sidebar-text text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Administração</h3>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="#" onclick="showSection('users')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                    <i class="fas fa-users w-5"></i>
+                                    <span class="sidebar-text">Usuários</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('settings')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                    <i class="fas fa-cog w-5"></i>
+                                    <span class="sidebar-text">Configurações</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showSection('logs')" class="nav-item flex items-center space-x-3 py-2 px-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                    <i class="fas fa-list-alt w-5"></i>
+                                    <span class="sidebar-text">Logs de Auditoria</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-border">
+                    <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 py-2 px-3 text-muted-foreground hover:text-destructive transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="sidebar-text">Sair</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 flex flex-col">
+                <!-- Inbox View -->
+                <div id="inboxView" class="flex-1 flex flex-col">
+                    <!-- Email List Header -->
+                    <div class="bg-card border-b border-border px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                <div class="flex items-center space-x-2">
+                                    <button class="p-2 hover:bg-muted rounded transition-colors" title="Atualizar">
+                                        <i class="fas fa-sync-alt text-muted-foreground"></i>
+                                    </button>
+                                    <button class="p-2 hover:bg-muted rounded transition-colors" title="Arquivar">
+                                        <i class="fas fa-archive text-muted-foreground"></i>
+                                    </button>
+                                    <button class="p-2 hover:bg-muted rounded transition-colors" title="Excluir">
+                                        <i class="fas fa-trash text-muted-foreground"></i>
+                                    </button>
+                                    <button class="p-2 hover:bg-muted rounded transition-colors" title="Marcar como spam">
+                                        <i class="fas fa-exclamation-triangle text-muted-foreground"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                                <span>1-50 de 1.234</span>
+                                <button class="p-1 hover:bg-muted rounded transition-colors">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="p-1 hover:bg-muted rounded transition-colors">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email List -->
+                    <div class="flex-1 overflow-y-auto">
+                        <!-- @MAP: emails.map(email => ( -->
+                        <div class="email-item border-b border-border p-4 cursor-pointer" onclick="openEmail()">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                <button class="text-muted-foreground hover:text-yellow-500">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 min-w-0">
+                                            <span class="font-medium text-foreground" data-bind="email.sender">Maria Silva</span>
+                                            <span class="text-sm text-foreground font-medium truncate" data-bind="email.subject">Relatório mensal de vendas - Dezembro 2024</span>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground whitespace-nowrap" data-bind="email.time">10:30</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground truncate mt-1" data-bind="email.preview">Olá! Segue anexo o relatório completo de vendas do mês de dezembro com análises detalhadas...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="email-item border-b border-border p-4 cursor-pointer">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                <button class="text-muted-foreground hover:text-yellow-500">
+                                    <i class="far fa-star"></i>
+                                </button>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 min-w-0">
+                                            <span class="text-muted-foreground" data-bind="email.sender">Carlos Santos</span>
+                                            <span class="text-sm text-muted-foreground truncate" data-bind="email.subject">Reunião de alinhamento - Projeto Alpha</span>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground whitespace-nowrap" data-bind="email.time">09:15</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground truncate mt-1" data-bind="email.preview">Boa tarde! Gostaria de agendar uma reunião para discutirmos os próximos passos do projeto...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="email-item border-b border-border p-4 cursor-pointer">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                <button class="text-yellow-500">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 min-w-0">
+                                            <span class="font-medium text-foreground" data-bind="email.sender">Sistema EmailServer</span>
+                                            <span class="text-sm text-foreground font-medium truncate" data-bind="email.subject">Backup automático concluído com sucesso</span>
+                                        </div>
+                                        <span class="text-sm text-muted-foreground whitespace-nowrap" data-bind="email.time">08:00</span>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground truncate mt-1" data-bind="email.preview">O backup automático de 15/01/2024 foi concluído com sucesso. Todos os dados foram...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- User Management View (Admin/Super Admin only) -->
+                <div id="usersView" class="hidden flex-1 p-6">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="flex items-center justify-between mb-6">
+                            <h1 class="text-2xl font-bold text-foreground">Gerenciamento de Usuários</h1>
+                            <button id="createUserBtn" onclick="showCreateUser()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center space-x-2">
+                                <i class="fas fa-plus"></i>
+                                <span>Novo Usuário</span>
+                            </button>
+                        </div>
+
+                        <!-- User Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-muted-foreground">Total de Usuários</p>
+                                        <p class="text-2xl font-bold text-foreground">1,234</p>
+                                    </div>
+                                    <i class="fas fa-users text-2xl text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-muted-foreground">Administradores</p>
+                                        <p class="text-2xl font-bold text-foreground">12</p>
+                                    </div>
+                                    <i class="fas fa-user-shield text-2xl text-yellow-500"></i>
+                                </div>
+                            </div>
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-muted-foreground">Clientes</p>
+                                        <p class="text-2xl font-bold text-foreground">1,221</p>
+                                    </div>
+                                    <i class="fas fa-user text-2xl text-green-500"></i>
+                                </div>
+                            </div>
+                            <div class="bg-card border border-border rounded-lg p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-muted-foreground">Ativos Hoje</p>
+                                        <p class="text-2xl font-bold text-foreground">892</p>
+                                    </div>
+                                    <i class="fas fa-chart-line text-2xl text-green-500"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Users Table -->
+                        <div class="bg-card border border-border rounded-lg overflow-hidden">
+                            <div class="px-6 py-4 border-b border-border">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-lg font-semibold text-foreground">Lista de Usuários</h2>
+                                    <div class="flex items-center space-x-4">
+                                        <select class="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent">
+                                            <option>Todos os tipos</option>
+                                            <option>Super Admin</option>
+                                            <option>Admin</option>
+                                            <option>Cliente</option>
+                                        </select>
+                                        <input type="text" placeholder="Buscar usuário..." class="px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-muted">
+                                        <tr>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">Usuário</th>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">E-mail</th>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">Tipo</th>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">Status</th>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">Último Acesso</th>
+                                            <th class="text-left py-3 px-6 font-medium text-muted-foreground">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        <!-- @MAP: users.map(user => ( -->
+                                        <tr class="hover:bg-muted/50">
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                                        <span class="text-primary-foreground text-sm font-medium" data-bind="user.initials">JS</span>
+                                                    </div>
+                                                    <span class="font-medium text-foreground" data-bind="user.name">João Silva</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground" data-bind="user.email">joao@empresa.com</td>
+                                            <td class="py-4 px-6">
+                                                <span class="role-badge role-super-admin">Super Admin</span>
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Ativo</span>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground" data-bind="user.lastLogin">2 horas atrás</td>
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-2">
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Editar">
+                                                        <i class="fas fa-edit text-muted-foreground"></i>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Desativar">
+                                                        <i class="fas fa-user-slash text-muted-foreground"></i>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Excluir">
+                                                        <i class="fas fa-trash text-destructive"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="hover:bg-muted/50">
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                                        <span class="text-secondary-foreground text-sm font-medium">MS</span>
+                                                    </div>
+                                                    <span class="font-medium text-foreground">Maria Santos</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground">maria@empresa.com</td>
+                                            <td class="py-4 px-6">
+                                                <span class="role-badge role-admin">Admin</span>
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Ativo</span>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground">1 dia atrás</td>
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-2">
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Editar">
+                                                        <i class="fas fa-edit text-muted-foreground"></i>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Desativar">
+                                                        <i class="fas fa-user-slash text-muted-foreground"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="hover:bg-muted/50">
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                                                        <span class="text-muted-foreground text-sm font-medium">CP</span>
+                                                    </div>
+                                                    <span class="font-medium text-foreground">Carlos Pereira</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground">carlos@cliente.com</td>
+                                            <td class="py-4 px-6">
+                                                <span class="role-badge role-client">Cliente</span>
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">Inativo</span>
+                                            </td>
+                                            <td class="py-4 px-6 text-muted-foreground">1 semana atrás</td>
+                                            <td class="py-4 px-6">
+                                                <div class="flex items-center space-x-2">
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Editar">
+                                                        <i class="fas fa-edit text-muted-foreground"></i>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-muted rounded transition-colors" title="Ativar">
+                                                        <i class="fas fa-user-check text-green-600"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- @END_MAP )) -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="px-6 py-4 border-t border-border">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-muted-foreground">Mostrando 1-10 de 1.234 usuários</p>
+                                    <div class="flex items-center space-x-2">
+                                        <button class="px-3 py-1 border border-input rounded hover:bg-muted transition-colors">Anterior</button>
+                                        <button class="px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors">1</button>
+                                        <button class="px-3 py-1 border border-input rounded hover:bg-muted transition-colors">2</button>
+                                        <button class="px-3 py-1 border border-input rounded hover:bg-muted transition-colors">3</button>
+                                        <button class="px-3 py-1 border border-input rounded hover:bg-muted transition-colors">Próximo</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Composition Modal -->
+                <div id="composeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-card border border-border rounded-lg shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden">
+                        <div class="flex items-center justify-between p-4 border-b border-border">
+                            <h2 class="text-lg font-semibold text-foreground">Nova Mensagem</h2>
+                            <button onclick="hideCompose()" class="p-1 hover:bg-muted rounded transition-colors">
+                                <i class="fas fa-times text-muted-foreground"></i>
+                            </button>
+                        </div>
+
+                        <form class="p-4 space-y-4">
+                            <div>
+                                <input type="email" placeholder="Para" class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent" data-mock="true">
+                            </div>
+                            <div>
+                                <input type="text" placeholder="Assunto" class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent" data-mock="true">
+                            </div>
+                            <div>
+                                <textarea rows="12" placeholder="Escreva sua mensagem..." class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent resize-none" data-mock="true"></textarea>
+                            </div>
+                        </form>
+
+                        <div class="flex items-center justify-between p-4 border-t border-border">
+                            <div class="flex items-center space-x-2">
+                                <button class="p-2 hover:bg-muted rounded transition-colors" title="Anexar arquivo">
+                                    <i class="fas fa-paperclip text-muted-foreground"></i>
+                                </button>
+                                <button class="p-2 hover:bg-muted rounded transition-colors" title="Inserir link">
+                                    <i class="fas fa-link text-muted-foreground"></i>
+                                </button>
+                                <button class="p-2 hover:bg-muted rounded transition-colors" title="Emoji">
+                                    <i class="fas fa-smile text-muted-foreground"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="px-4 py-2 border border-input rounded-lg hover:bg-muted transition-colors">Salvar Rascunho</button>
+                                <button class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create User Modal -->
+                <div id="createUserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-card border border-border rounded-lg shadow-2xl w-full max-w-md mx-4">
+                        <div class="flex items-center justify-between p-4 border-b border-border">
+                            <h2 class="text-lg font-semibold text-foreground">Criar Novo Usuário</h2>
+                            <button onclick="hideCreateUser()" class="p-1 hover:bg-muted rounded transition-colors">
+                                <i class="fas fa-times text-muted-foreground"></i>
+                            </button>
+                        </div>
+
+                        <form class="p-4 space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Nome Completo</label>
+                                <input type="text" class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent" data-mock="true">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">E-mail</label>
+                                <input type="email" class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent" data-mock="true">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Tipo de Usuário</label>
+                                <select class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent">
+                                    <option value="client">Cliente</option>
+                                    <option value="admin" id="adminOption">Administrador</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Senha Temporária</label>
+                                <input type="password" class="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent" data-mock="true">
+                            </div>
+                        </form>
+
+                        <div class="flex items-center justify-end space-x-2 p-4 border-t border-border">
+                            <button onclick="hideCreateUser()" class="px-4 py-2 border border-input rounded-lg hover:bg-muted transition-colors">Cancelar</button>
+                            <button class="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">Criar Usuário</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let currentUser = null;
+            let currentSection = 'inbox';
+
+            // Login functionality
+            window.login = function(role) {
+                currentUser = { role: role };
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Update UI based on role
+                updateUIForRole(role);
+                showSection('inbox');
+            };
+
+            // Update UI based on user role
+            function updateUIForRole(role) {
+                const userRoleElement = document.getElementById('userRole');
+                const adminSections = document.getElementById('adminSections');
+                const createUserBtn = document.getElementById('createUserBtn');
+                const adminOption = document.getElementById('adminOption');
+
+                // Update role badge
+                userRoleElement.className = 'role-badge';
+                
+                switch(role) {
+                    case 'super_admin':
+                        userRoleElement.classList.add('role-super-admin');
+                        userRoleElement.textContent = 'Super Admin';
+                        adminSections.classList.remove('hidden');
+                        if (createUserBtn) createUserBtn.classList.remove('hidden');
+                        if (adminOption) adminOption.classList.remove('hidden');
+                        break;
+                    case 'admin':
+                        userRoleElement.classList.add('role-admin');
+                        userRoleElement.textContent = 'Admin';
+                        adminSections.classList.remove('hidden');
+                        if (createUserBtn) createUserBtn.classList.remove('hidden');
+                        if (adminOption) adminOption.classList.add('hidden'); // Admins can't create other admins
+                        break;
+                    case 'client':
+                        userRoleElement.classList.add('role-client');
+                        userRoleElement.textContent = 'Cliente';
+                        adminSections.classList.add('hidden');
+                        if (createUserBtn) createUserBtn.classList.add('hidden');
+                        break;
+                }
+            }
+
+            // Logout functionality
+            window.logout = function() {
+                currentUser = null;
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+            };
+
+            // Sidebar toggle
+            window.toggleSidebar = function() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('collapsed');
+            };
+
+            // Navigation
+            window.showSection = function(section) {
+                // Hide all sections
+                document.getElementById('inboxView').classList.add('hidden');
+                document.getElementById('usersView').classList.add('hidden');
+                
+                // Update navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('text-foreground', 'bg-muted');
+                    item.classList.add('text-muted-foreground');
+                });
+
+                // Show selected section
+                switch(section) {
+                    case 'inbox':
+                    case 'sent':
+                    case 'drafts':
+                    case 'spam':
+                    case 'trash':
+                        document.getElementById('inboxView').classList.remove('hidden');
+                        break;
+                    case 'users':
+                        if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin')) {
+                            document.getElementById('usersView').classList.remove('hidden');
+                        }
+                        break;
+                    case 'settings':
+                    case 'logs':
+                        // TODO: Implement settings and logs views
+                        console.log('Opening section:', section);
+                        break;
+                }
+
+                currentSection = section;
+            };
+
+            // Email composition
+            window.showCompose = function() {
+                document.getElementById('composeModal').classList.remove('hidden');
+            };
+
+            window.hideCompose = function() {
+                document.getElementById('composeModal').classList.add('hidden');
+            };
+
+            // User creation (Admin/Super Admin only)
+            window.showCreateUser = function() {
+                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin')) {
+                    document.getElementById('createUserModal').classList.remove('hidden');
+                }
+            };
+
+            window.hideCreateUser = function() {
+                document.getElementById('createUserModal').classList.add('hidden');
+            };
+
+            // Email opening (placeholder)
+            window.openEmail = function() {
+                // TODO: Implement email detail view
+                console.log('Opening email...');
+            };
+
+            // Close modals when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('fixed')) {
+                    if (e.target.id === 'composeModal') {
+                        hideCompose();
+                    }
+                    if (e.target.id === 'createUserModal') {
+                        hideCreateUser();
+                    }
+                }
+            });
+
+            // Initialize with login screen
+            showSection('inbox');
+        })();
+    </script>
+</body>
+</html>
