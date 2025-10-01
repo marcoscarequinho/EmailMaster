@@ -9,6 +9,7 @@
     "vercel-build": "vite build",
     "start": "cross-env NODE_ENV=production node api/index.js",
     "check": "tsc",
+    "db:check": "tsx scripts/check-db.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
@@ -97,7 +98,7 @@
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "cross-env": "^10.1.0",
-    "drizzle-kit": "^0.18.1",
+    "drizzle-kit": "^0.30.0",
     "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.17",
