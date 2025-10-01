@@ -228,12 +228,12 @@ export default function UserTable({ user }: UserTableProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div>
-                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <Select value={roleFilter || "all"} onValueChange={(value) => setRoleFilter(value === "all" ? "" : value)}>
                       <SelectTrigger className="w-48" data-testid="select-role-filter">
                         <SelectValue placeholder="Todos os tipos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos os tipos</SelectItem>
+                        <SelectItem value="all">Todos os tipos</SelectItem>
                         <SelectItem value="super_admin">Super Admin</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="client">Cliente</SelectItem>
