@@ -1,0 +1,116 @@
+2025-08-29 13:02:21.45
+01e38cf2
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 13:02:21.45
+01e38cf2
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:02:21.45
+01e38cf2
+User
+isAuthenticated: false
+2025-08-29 13:02:21.45
+01e38cf2
+User
+}
+2025-08-29 13:02:21.45
+01e38cf2
+User
+[PASSPORT DEBUG] Authenticating username: "0admin"
+2025-08-29 13:02:23.68
+01e38cf2
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 13:02:23.68
+01e38cf2
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 13:02:23.68
+01e38cf2
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 13:02:23.68
+01e38cf2
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 13:02:23.68
+01e38cf2
+User
+4:02:23 PM [express] POST /api/login 401 in 2552ms :: {"message":"Invalid credentials"}
+2025-08-29 13:02:45.73
+01e38cf2
+User
+[SERVER DEBUG] POST /api/login {
+2025-08-29 13:02:45.73
+01e38cf2
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:02:45.73
+01e38cf2
+User
+headers: {
+2025-08-29 13:02:45.73
+01e38cf2
+User
+'content-type': 'application/json',
+2025-08-29 13:02:45.73
+01e38cf2
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 13:02:45.73
+01e38cf2
+User
+accept: '*/*'
+2025-08-29 13:02:45.73
+01e38cf2
+User
+}
+2025-08-29 13:02:45.73
+01e38cf2
+User
+}
+2025-08-29 13:02:48.04
+01e38cf2
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 13:02:48.04
+01e38cf2
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 13:02:48.04
+01e38cf2
+User
+isAuthenticated: false
+2025-08-29 13:02:48.04
+01e38cf2
+User
+}
+2025-08-29 13:02:48.04
+01e38cf2
+User
+[PASSPORT DEBUG] Authenticating username: "0admin"
+2025-08-29 13:02:48.24
+01e38cf2
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 13:02:48.24
+01e38cf2
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 13:02:48.24
+01e38cf2
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 13:02:48.24
+01e38cf2
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 13:02:48.24
+01e38cf2
+User
+4:02:48 PM [express] POST /api/login 401 in 2512ms :: {"message":"Invalid credentials"}
+2025-08-29 13:02:52.69
+b796266e
+System
+system: received signal terminated

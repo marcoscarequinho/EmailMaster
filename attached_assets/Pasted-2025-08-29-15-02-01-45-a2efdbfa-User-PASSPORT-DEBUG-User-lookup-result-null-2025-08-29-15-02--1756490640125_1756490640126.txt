@@ -1,0 +1,116 @@
+2025-08-29 15:02:01.45
+a2efdbfa
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 15:02:01.45
+a2efdbfa
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 15:02:01.45
+a2efdbfa
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 15:02:01.45
+a2efdbfa
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 15:02:01.45
+a2efdbfa
+User
+6:02:01 PM [express] POST /api/login 401 in 345ms :: {"message":"Invalid credentials"}
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+[SERVER DEBUG] POST /api/login {
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+headers: {
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+'content-type': 'application/json',
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+accept: '*/*'
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+}
+2025-08-29 15:03:08.44
+a2efdbfa
+User
+}
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+[LOGIN DEBUG] Login request received: {
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+body: { username: '0admin', password: 'BB03@5bb03#5' },
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+isAuthenticated: false
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+}
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+[PASSPORT DEBUG] Authenticating username: "0admin"
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+[STORAGE DEBUG] Looking for user with username: "0admin"
+2025-08-29 15:03:08.77
+a2efdbfa
+User
+[STORAGE DEBUG] DATABASE_URL: postgresql://neondb_owner:npg_87rQZTwsqhOJ@ep-square-surf-afey149a.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require
+2025-08-29 15:03:08.96
+a2efdbfa
+User
+[STORAGE DEBUG] All users in database: [ { username: null, role: 'client' } ]
+2025-08-29 15:03:09.00
+a2efdbfa
+User
+[STORAGE DEBUG] Raw SQL result: []
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[STORAGE DEBUG] Drizzle query result: []
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[STORAGE DEBUG] Found user: null
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[PASSPORT DEBUG] User lookup result: null
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[PASSPORT DEBUG] User not found or inactive
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[LOGIN DEBUG] Passport result: { err: null, user: null, info: undefined }
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+[LOGIN DEBUG] No user - sending 401
+2025-08-29 15:03:09.05
+a2efdbfa
+User
+6:03:09 PM [express] POST /api/login 401 in 617ms :: {"message":"Invalid credentials"}
